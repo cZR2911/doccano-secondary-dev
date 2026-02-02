@@ -12,4 +12,16 @@ export class MemberItem {
   get isProjectAdmin(): boolean {
     return this.rolename === 'project_admin'
   }
+
+  get isApprover(): boolean {
+    return this.rolename === 'annotation_approver'
+  }
+
+  get isAnnotator(): boolean {
+    return this.rolename === 'annotator'
+  }
+
+  get canEditOriginalText(): boolean {
+    return this.isProjectAdmin || this.isApprover
+  }
 }

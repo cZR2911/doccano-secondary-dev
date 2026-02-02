@@ -1,0 +1,25 @@
+今日改动记录（2026-02-02）
+
+1. 功能开发：原文编辑与展示 (Knowledge Correction Workflow)
+   - 前端 (Frontend):
+     - 在标注页面添加“编辑原文”功能（仅管理员和审核员可见）。
+     - 新增“原文展示”卡片：当文本被修改后，自动在界面显示修改前的原始文本。
+     - 优化 UI：修复了长代码导致的 ESLint 报错，优化了样式绑定。
+   - 后端 (Backend):
+     - 修改 `ExampleSerializer`：实现文本修改时的自动备份机制（首次修改保存到 `meta.original_text`）。
+     - 新增权限控制 `IsProjectAdminOrApprover`：确保只有管理员和审核员有权修改原文。
+
+2. 问题修复：标注员数据不可见
+   - 问题原因：项目开启了“协同标注 (Collaborative Annotation)”模式，且数据未分配给标注员。
+   - 解决方案：
+     - 编写并执行了修复脚本 `fix_assignments_and_create_approver.py`。
+     - 为标注员账号 `bz` 分配了现有数据。
+     - 创建了测试用的审核员账号 `sh` 并分配数据。
+
+3. 文件变动清单
+   - `backend/examples/serializers.py`: 增加原文备份逻辑。
+   - `backend/projects/permissions.py`: 增加审核员编辑权限。
+   - `frontend/pages/projects/_id/sequence-labeling/index.vue`: 新增编辑按钮、原文展示 UI。
+   - `frontend/domain/models/member/member.ts`: 新增角色权限判断逻辑。
+   - `backend/check_project_status.py` (新增): 项目状态排查脚本。
+   - `backend/fix_assignments_and_create_approver.py` (新增): 权限与任务分配修复脚本。

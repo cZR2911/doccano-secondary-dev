@@ -1,0 +1,11 @@
+看得见吗？
+http://localhost:8000/
+
+- 管理员账号 : admin
+- 管理员密码 : password
+hello
+
+用了虚拟环境（Conda）。代码是 git clone 下来的，但运行是用 pip 安装的包跑的
+
+你这个项目怎么部署的 git clone还是pip，有用虚拟环境吗
+

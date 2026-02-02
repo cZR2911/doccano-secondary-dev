@@ -13,7 +13,10 @@ export const getLinkToAnnotationPage = (
     ImageCaptioning: 'image-captioning',
     BoundingBox: 'object-detection',
     Segmentation: 'segmentation',
-    Speech2text: 'speech-to-text'
+    Speech2text: 'speech-to-text',
+    // [EXPERIMENTAL-FEATURE-START]
+    KnowledgeCorrection: 'sequence-labeling'
+    // [EXPERIMENTAL-FEATURE-END]
   }
   const link = `/projects/${projectId}/${mapping[projectType]}`
   return link

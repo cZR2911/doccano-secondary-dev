@@ -1,0 +1,42 @@
+【开发常用】
+
+1. **项目一键启动**
+   - 脚本路径：`.\dev_start.ps1`
+   - 作用：自动打开三个窗口分别运行 Backend, Celery, Frontend。
+   - 访问地址：http://localhost:3000
+
+2. **手动启动服务** (如果不使用一键脚本)
+   - **Backend (Django)**:
+     ```powershell
+     cd backend
+     python manage.py runserver
+     ```
+   - **Celery (任务队列)**:
+     ```powershell
+     cd backend
+     celery -A config worker -l info --pool=solo
+     ```
+   - **Frontend (Nuxt.js)**:
+     ```powershell
+     cd frontend
+     yarn dev
+     ```
+
+3. **常用管理命令**
+   - **创建管理员**:
+     ```powershell
+     python backend/manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
+     ```
+   - **修复标注任务与创建审核员**:
+     ```powershell
+     python backend/fix_assignments_and_create_approver.py
+     ```
+     *作用：自动将当前项目的任务分发给标注员 (bz)，并确保审核员 (sh) 账号存在。*
+
+4. **环境相关**
+   - 后端环境：Conda `doccano`
+   - 前端环境：Node.js LTS (v24.13.0)
+
+5. **注意事项**
+   - Windows 下 Celery 必须使用 `--pool=solo` 模式，否则可能卡死。
+   - 每次修改代码后，后端会自动重启，但 Celery 偶尔需要手动重启才能加载最新代码（特别是 task 相关的修改）。

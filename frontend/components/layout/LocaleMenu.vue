@@ -2,7 +2,7 @@
   <v-menu open-on-hover offset-y z-index="200">
     <template #activator="{ on }">
       <v-btn text v-on="on">
-        {{ $i18n.locale }}
+        {{ currentLocale.name }}
         <v-icon>{{ mdiMenuDown }}</v-icon>
       </v-btn>
     </template>
@@ -26,6 +26,11 @@ export default Vue.extend({
   data() {
     return {
       mdiMenuDown
+    }
+  },
+  computed: {
+    currentLocale(): any {
+      return (this.$i18n.locales as any[]).find((l) => l.code === this.$i18n.locale)
     }
   }
 })

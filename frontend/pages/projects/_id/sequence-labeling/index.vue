@@ -15,6 +15,17 @@
     </template>
     <template #content>
       <v-card>
+        <!-- [EXPERIMENTAL-FEATURE-START] Edit Button -->
+        <v-card-title v-if="canEdit" class="pb-0">
+          <v-spacer />
+          <v-btn small color="primary" text @click="openEditDialog">
+            <v-icon left small>
+              {{ mdiPencil }}
+            </v-icon>
+            编辑原文
+          </v-btn>
+        </v-card-title>
+        <!-- [EXPERIMENTAL-FEATURE-END] -->
         <div class="annotation-text pa-4">
           <entity-editor
             :dark="$vuetify.theme.dark"
@@ -37,6 +48,101 @@
           />
         </div>
       </v-card>
+
+      <!-- [EXPERIMENTAL-FEATURE-START] Original Text Display -->
+      <v-card v-if="doc.meta && doc.meta.original_text" class="mt-4">
+        <v-card-title class="subtitle-1 pb-2">
+          <v-icon left small>
+            {{ mdiHistory }}
+          </v-icon>
+          原文 (Original Text)
+        </v-card-title>
+        <v-divider />
+        <div
+          class="pa-4 grey--text text--darken-2"
+          :style="{
+            whiteSpace: 'pre-wrap',
+            fontFamily: '\'Roboto\', sans-serif',
+            fontSize: '1.1rem',
+            lineHeight: '1.8rem'
+          }"
+        >
+          {{ doc.meta.original_text }}
+        </div>
+      </v-card>
+      <!-- [EXPERIMENTAL-FEATURE-END] -->
+
+      <!-- [EXPERIMENTAL-FEATURE-START] Knowledge Correction Display -->
+      <v-card v-if="formattedComments.length > 0" class="mt-4 pa-4">
+        <v-card-title class="pb-2">
+          <v-icon left color="primary">
+            {{ mdiCommentTextMultiple }}
+          </v-icon>
+          批注与纠错列表
+        </v-card-title>
+        <v-divider />
+        <v-list two-line>
+          <v-list-item v-for="item in formattedComments" :key="item.id">
+            <v-list-item-avatar :color="item.color" size="12" class="mt-6" />
+            <v-list-item-content>
+              <v-list-item-title class="font-weight-bold">
+                <v-chip :color="item.color" small label text-color="white" class="mr-2">
+                  {{ item.labelName }}
+                </v-chip>
+                <span class="grey--text text--darken-2">"{{ item.originalText }}"</span>
+                <v-icon small class="mx-2">
+                  {{ mdiArrowRightBold }}
+                </v-icon>
+                <span class="primary--text">{{ item.correction }}</span>
+              </v-list-item-title>
+              <v-list-item-subtitle class="mt-1">
+                用户: {{ item.username }} | 时间: {{
+                  item.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('YYYY-MM-DD HH:mm')
+                }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-btn icon small @click="deleteComment(item)">
+                <v-icon color="grey lighten-1">
+                  {{ mdiDelete }}
+                </v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+      </v-card>
+      <!-- [EXPERIMENTAL-FEATURE-END] -->
+
+      <!-- [EXPERIMENTAL-FEATURE-START] Edit Dialog -->
+      <v-dialog v-model="dialogEdit" max-width="800px">
+        <v-card>
+          <v-card-title class="headline">
+            编辑原文文本
+          </v-card-title>
+          <v-card-text>
+            <v-alert type="warning" dense outlined class="mb-4">
+              注意：修改文本可能会导致已有的“位置标注”（如实体抽取）偏移。保存后请务必检查标注准确性。
+            </v-alert>
+            <v-textarea
+              v-model="editText"
+              label="文本内容"
+              auto-grow
+              outlined
+              rows="10"
+            />
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn color="grey" text @click="dialogEdit = false">
+              取消
+            </v-btn>
+            <v-btn color="primary" @click="saveText">
+              保存修改
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <!-- [EXPERIMENTAL-FEATURE-END] -->
     </template>
     <template #sidebar>
       <annotation-progress :progress="progress" />
@@ -86,7 +192,17 @@
 </template>
 
 <script>
-import { mdiChevronDown, mdiChevronUp } from '@mdi/js'
+import {
+  mdiChevronDown,
+  mdiChevronUp,
+  // [EXPERIMENTAL-FEATURE-START]
+  mdiCommentTextMultiple,
+  mdiArrowRightBold,
+  mdiDelete,
+  mdiPencil,
+  mdiHistory
+  // [EXPERIMENTAL-FEATURE-END]
+} from '@mdi/js'
 import _ from 'lodash'
 import { mapGetters } from 'vuex'
 import LayoutText from '@/components/tasks/layout/LayoutText'
@@ -127,7 +243,18 @@ export default {
       relationMode: false,
       showLabelTypes: true,
       mdiChevronUp,
-      mdiChevronDown
+      mdiChevronDown,
+      // [EXPERIMENTAL-FEATURE-START]
+      mdiCommentTextMultiple,
+      mdiArrowRightBold,
+      mdiDelete,
+      mdiPencil,
+      mdiHistory,
+      comments: [],
+      member: {},
+      dialogEdit: false,
+      editText: ''
+      // [EXPERIMENTAL-FEATURE-END]
     }
   },
 
@@ -182,6 +309,35 @@ export default {
       return !!this.project.useRelation
     },
 
+    // [EXPERIMENTAL-FEATURE-START]
+    canEdit() {
+      return this.member && (this.member.isProjectAdmin || this.member.isApprover)
+    },
+    // [EXPERIMENTAL-FEATURE-END]
+
+    // [EXPERIMENTAL-FEATURE-START]
+    formattedComments() {
+      const regex = /^\[(.+?)\]\s+"(.+?)"\s+->\s+(.+)$/
+      return this.comments
+        .map((c) => {
+          const match = c.text.match(regex)
+          if (match) {
+            const labelName = match[1]
+            const label = this.spanTypes.find((l) => l.text === labelName)
+            return {
+              ...c,
+              labelName,
+              originalText: match[2],
+              correction: match[3],
+              color: label ? label.backgroundColor : '#808080'
+            }
+          }
+          return null
+        })
+        .filter((c) => c !== null)
+    },
+    // [EXPERIMENTAL-FEATURE-END]
+
     labelTypes() {
       if (this.relationMode) {
         return this.relationTypes
@@ -206,6 +362,9 @@ export default {
     this.relationTypes = await this.$services.relationType.list(this.projectId)
     this.project = await this.$services.project.findById(this.projectId)
     this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
+    // [EXPERIMENTAL-FEATURE-START]
+    this.member = await this.$repositories.member.fetchMyRole(this.projectId)
+    // [EXPERIMENTAL-FEATURE-END]
   },
 
   methods: {
@@ -219,6 +378,9 @@ export default {
     async list(docId) {
       const annotations = await this.$services.sequenceLabeling.list(this.projectId, docId)
       const relations = await this.$services.sequenceLabeling.listRelations(this.projectId, docId)
+      // [EXPERIMENTAL-FEATURE-START]
+      this.comments = await this.$repositories.comment.list(this.projectId, docId)
+      // [EXPERIMENTAL-FEATURE-END]
       // In colab mode, if someone add a new label and annotate data
       // with the label during your work, it occurs exception
       // because there is no corresponding label.
@@ -240,6 +402,27 @@ export default {
         startOffset,
         endOffset
       )
+      // [EXPERIMENTAL-FEATURE-START] Knowledge Correction Workflow
+      // Prompt for correction/comment for ANY label applied
+      try {
+        const label = this.spanTypes.find((l) => l.id === labelId)
+        if (label) {
+          const selectedText = this.doc.text.slice(startOffset, endOffset)
+          const msg = `请输入针对 [${label.text}] "${selectedText}" 的批注/纠错建议 (Leave empty to skip):`
+          const comment = window.prompt(msg)
+          if (comment) {
+            await this.$repositories.comment.create(
+              this.projectId,
+              this.doc.id,
+              `[${label.text}] "${selectedText}" -> ${comment}`
+            )
+          }
+        }
+      } catch (e) {
+        console.error('Error creating correction comment:', e)
+      }
+      // [EXPERIMENTAL-FEATURE-END]
+
       await this.list(this.doc.id)
     },
 
@@ -295,6 +478,35 @@ export default {
     async updateProgress() {
       this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
     },
+
+    // [EXPERIMENTAL-FEATURE-START]
+    openEditDialog() {
+      this.editText = this.doc.text
+      this.dialogEdit = true
+    },
+
+    async saveText() {
+      try {
+        const payload = {
+          ...this.doc,
+          text: this.editText
+        }
+        await this.$services.example.update(this.projectId, payload)
+        this.dialogEdit = false
+        // Refresh the example
+        await this.$fetch()
+      } catch (e) {
+        console.error('Error saving text:', e)
+        alert('保存失败: ' + e.message)
+      }
+    },
+
+    // [EXPERIMENTAL-FEATURE-START]
+    async deleteComment(comment) {
+      await this.$repositories.comment.delete(this.projectId, comment)
+      await this.list(this.doc.id)
+    },
+    // [EXPERIMENTAL-FEATURE-END]
 
     async confirm() {
       await this.$services.example.confirm(this.projectId, this.doc.id)

@@ -11,6 +11,7 @@
         v-model="selected"
         :items="catalog"
         item-text="displayName"
+        :menu-props="{ maxHeight: 600 }"
         label="File format"
         outlined
       />

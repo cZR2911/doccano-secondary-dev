@@ -1,7 +1,11 @@
 <template>
   <v-card>
     <v-card-title v-if="isStaff">
-      <v-btn class="text-capitalize" color="primary" @click.stop="$router.push('projects/create')">
+      <v-btn
+        class="text-capitalize"
+        color="primary"
+        @click.stop="goCreate"
+      >
         {{ $t('generic.create') }}
       </v-btn>
       <v-btn class="text-capitalize ms-2" color="primary" :disabled="!canClone" @click.stop="clone">
@@ -99,6 +103,9 @@ export default Vue.extend({
 
     updateQuery(query: object) {
       this.$router.push(query)
+    },
+    goCreate() {
+      this.$router.push(this.localePath('/projects/create'))
     }
   }
 })

@@ -20,6 +20,9 @@ export default {
     '图像描述',
     '目标检测',
     '图像分割',
-    '语音识别'
+    '语音识别',
+    // [EXPERIMENTAL-FEATURE-START]
+    '知识纠错'
+    // [EXPERIMENTAL-FEATURE-END]
   ]
 }

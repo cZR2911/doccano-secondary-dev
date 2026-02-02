@@ -51,4 +51,5 @@ class IsAnnotationApprover(RolePermission):
 
 
 IsProjectMember = IsAnnotator | IsAnnotationApprover | IsProjectAdmin  # type: ignore
+IsProjectAdminOrApprover = IsProjectAdmin | IsAnnotationApprover  # type: ignore
 IsProjectStaffAndReadOnly = IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly  # type: ignore

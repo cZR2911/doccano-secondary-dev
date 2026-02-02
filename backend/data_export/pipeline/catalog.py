@@ -68,6 +68,10 @@ SEQUENCE_LABELING_DIR = EXAMPLE_DIR / "sequence_labeling"
 RELATION_EXTRACTION_DIR = EXAMPLE_DIR / "relation_extraction"
 Options.register(ProjectType.SEQUENCE_LABELING, JSONL, SEQUENCE_LABELING_DIR / "example.jsonl")
 Options.register(ProjectType.SEQUENCE_LABELING, JSONL, RELATION_EXTRACTION_DIR / "example.jsonl", True)
+# [EXPERIMENTAL-FEATURE-START]
+Options.register(ProjectType.KNOWLEDGE_CORRECTION, JSONL, SEQUENCE_LABELING_DIR / "example.jsonl")
+Options.register(ProjectType.KNOWLEDGE_CORRECTION, JSONL, RELATION_EXTRACTION_DIR / "example.jsonl", True)
+# [EXPERIMENTAL-FEATURE-END]
 
 # Sequence to sequence
 SEQ2SEQ_DIR = EXAMPLE_DIR / "sequence_to_sequence"

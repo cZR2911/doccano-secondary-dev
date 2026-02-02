@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-toolbar color="primary white--text" flat>
+    <v-toolbar v-if="title" color="primary white--text" flat>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
     </v-toolbar>
     <v-card-text class="text--primary mt-3 pl-4">
@@ -22,8 +22,10 @@
         v-if="agreeText"
         :disabled="disabled"
         class="text-none"
-        text
-        data-test="delete-button"
+        :color="agreeColor"
+        :text="!contained"
+        :depressed="contained"
+        :block="block"
         @click="agree"
       >
         {{ agreeText }}
@@ -50,6 +52,18 @@ export default Vue.extend({
       default: ''
     },
     disabled: {
+      type: Boolean,
+      default: false
+    },
+    agreeColor: {
+      type: String,
+      default: 'primary'
+    },
+    contained: {
+      type: Boolean,
+      default: false
+    },
+    block: {
       type: Boolean,
       default: false
     }

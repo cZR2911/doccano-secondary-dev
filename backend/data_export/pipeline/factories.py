@@ -142,6 +142,16 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
                 RenameFormatter(**mapper_image_captioning),
             ]
         },
+        # [EXPERIMENTAL-FEATURE-START]
+        ProjectType.KNOWLEDGE_CORRECTION: {
+            JSONL.name: [
+                ListedCategoryFormatter(Categories.column),
+                TupledSpanFormatter(Spans.column),
+                ListedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_sequence_labeling),
+            ],
+        },
+        # [EXPERIMENTAL-FEATURE-END]
     }
     return mapping[project.project_type][file_format]
 
@@ -158,6 +168,9 @@ def select_label_collection(project: Project) -> List[Type[Labels]]:
         ProjectType.BOUNDING_BOX: [BoundingBoxes],
         ProjectType.SEGMENTATION: [Segments],
         ProjectType.IMAGE_CAPTIONING: [Texts],
+        # [EXPERIMENTAL-FEATURE-START]
+        ProjectType.KNOWLEDGE_CORRECTION: [Spans, Relations] if use_relation else [Spans],
+        # [EXPERIMENTAL-FEATURE-END]
     }
     return mapping[project.project_type]
 

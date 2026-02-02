@@ -1,0 +1,148 @@
+今日改动记录（2026-01-29）
+
+目的
+- 用自定义品牌替换默认 doccano UI（Logo、标题、页脚等）
+- 修复“创建项目”核心功能不可用（前端报 500 / 创建后异常）
+- 统一创建项目入口路由，减少 404 与跳转混乱
+- 提升可观测性：错误提示更清晰，减少“未知错误/无反应”
+
+一、问题与修复：创建项目 500（根因在后端）
+1) 现象
+- 在 http://localhost:3000/create-project 填写项目名称/描述后点击“创建”，前端提示 Request failed with status code 500
+
+2) 根因
+- 后端创建项目成功保存后，会执行 Project.add_admin() 给项目创建者绑定“项目管理员”角色
+- 数据库缺少默认 Role（例如 project_admin），导致 Role.objects.get(...) 抛 Role.DoesNotExist
+- 直接引发 500，前端只看到 500
+
+3) 修复措施
+(1) 数据初始化：创建默认角色
+- 通过后端管理命令 create_roles 创建以下 Role：
+  - project_admin
+  - annotator
+  - annotation_approver
+- 相关实现：backend/roles/management/commands/create_roles.py
+
+(2) 代码兜底：避免将来再次因缺 Role 崩溃
+- 修改 Project.add_admin()：由 Role.objects.get(...) 改为 Role.objects.get_or_create(...)
+- 相关实现：backend/projects/models.py（Project.add_admin）
+
+4) 验证
+- 使用 Django/DRF 的 APIClient 对 /v1/projects 发起 POST，返回 201 且响应包含 id，确认后端创建链路恢复
+
+二、前端：创建项目页面与路由（/create-project & /projects/create）
+1) 目标
+- 统一用户创建入口，避免“按钮跳错路由导致 404”
+- 创建成功后跳转到 /projects/:id 主页稳定可用
+
+2) 当前入口策略
+- /create-project：作为实际创建表单页面（保留用户习惯入口）
+- /projects/create：作为兼容入口，重定向到 /create-project
+
+3) 创建流程（页面层）
+- 组件表单：ProjectTypeField / ProjectNameField / ProjectDescriptionField / TagList 等
+- 点击创建：
+  - 校验 valid（必填：名称与描述）
+  - 调用 this.$services.project.create(this.editedItem)
+  - 成功后跳转到 projects-id 命名路由（带 params.id）
+  - nextTick 后重置 editedItem（初始化表单）
+- 报错时：
+  - 对 axios error 进行分支处理（error.response / error.request / error.message）
+  - 弹窗显示更明确的错误信息（含 HTTP 状态码与返回体）
+- 相关实现：frontend/pages/create-project.vue
+
+4) 服务层错误兜底（避免“未知错误”）
+- ProjectApplicationService 的 list/create/update/clone catch 中，不再假设后端一定返回 response.data.detail
+- 统一为：e.response?.data?.detail || e.message || 默认兜底文案
+- 相关实现：frontend/services/application/project/projectApplicationService.ts
+
+三、前端：项目列表页“创建”按钮修复
+1) 现象
+- 创建按钮历史上出现过指向错误路径（例如 /projects-create 或 string 拼接），导致 404
+
+2) 修复
+- 改为 goCreate() 方法，并使用 localePath('/projects/create') 作为统一跳转入口
+- 相关实现：frontend/pages/projects/index.vue
+
+四、前端：中间件 setCurrentProject 稳定性修复（避免竞态/黑屏）
+1) 风险点
+- setCurrentProject 曾使用 debounce(…, 1000) 包裹
+- 路由已变更但 store 项目数据延迟加载，容易造成页面渲染与数据不同步（跳转抖动、回退、黑屏等）
+
+2) 修复
+- 移除 debounce，改为直接 async middleware
+- 相关实现：frontend/middleware/setCurrentProject.ts
+
+五、品牌/UI 改动（Logo、标题、登录页、首页、页脚、语言菜单）
+1) Logo 与标题
+- Header 未登录态 logo：icon.png -> logo.png
+- Header 未登录态标题：doccano -> 默联数据标注平台
+- TopBanner logo：icon.png -> logo.png
+- 相关实现：
+  - frontend/components/layout/TheHeader.vue
+  - frontend/components/layout/TheTopBanner.vue
+  - 新增资源：frontend/assets/logo.png
+
+2) 登录页 UI（按钮蓝色、输入框更美观、避免标题与内容重叠）
+- FormLogin：用户名/密码输入框改为 outlined + dense + prepend-inner-icon + primary（提升观感并降低重叠概率）
+- BaseCard：title 变为可选；agree 按钮支持颜色、contained、block 等，用于“登录按钮蓝色/全宽”
+- 相关实现：
+  - frontend/components/auth/FormLogin.vue
+  - frontend/components/utils/BaseCard.vue
+
+3) 登录页内容简化
+- 移除登录页中间的 Logo/平台名展示（保留表单为主）
+- 移除 SocialLogin（仅保留用户名密码登录）
+- 相关实现：frontend/pages/auth.vue
+
+4) 首页行为调整
+- 将首页从“宣传页/FeatureCards”改为“登录态分流”：
+  - 已登录 -> /projects
+  - 未登录 -> /auth
+- 相关实现：frontend/pages/index.vue
+
+5) 语言菜单显示优化
+- LocaleMenu 从显示 locale code（如 zh/en）改为显示语言名称（如 中文/English）
+- 相关实现：frontend/components/layout/LocaleMenu.vue
+
+6) i18n 默认语言调整
+- defaultLocale：en -> zh
+- fallbackLocale：en -> zh
+- 移除 fr/de 的 locales 配置（仅保留 zh/en）
+- 相关实现：frontend/i18n/index.js
+
+7) 页脚文案
+- 页脚从 doccano 改为 默联数据标注平台
+- 相关实现：frontend/components/layout/TheFooter.vue
+
+六、今日工作区注意事项（建议后续整理）
+1) 可能需要清理/确认是否提交的文件
+- TODO_P1.txt（未跟踪）
+- test.xlsx、media/ 等运行或临时产物（未跟踪）
+- frontend/assets/css/（未跟踪，当前 nuxt.config.js 有引用 fonts.css 作为 customVariables）
+- 警惕把账号/密码等敏感信息写入仓库（如临时沟通文件），建议立即删除或加入忽略规则
+
+2) Windows 行尾（LF/CRLF）提示
+- Git 提示多文件 LF 将被替换为 CRLF
+- 建议团队统一 .gitattributes 或编辑器行尾策略，以减少差异噪音
+
+关键文件索引（按路径）
+- 后端
+  - backend/projects/models.py（Project.add_admin 兜底）
+  - backend/roles/management/commands/create_roles.py（默认角色创建命令）
+- 前端
+  - frontend/pages/create-project.vue（创建项目表单、跳转、错误提示）
+  - frontend/pages/projects/index.vue（创建按钮入口 goCreate）
+  - frontend/pages/projects/create.vue（兼容入口重定向）
+  - frontend/middleware/setCurrentProject.ts（移除 debounce）
+  - frontend/services/application/project/projectApplicationService.ts（服务层错误兜底）
+  - frontend/components/layout/TheHeader.vue（Logo/标题与菜单简化）
+  - frontend/components/layout/TheTopBanner.vue（Logo 替换）
+  - frontend/components/auth/FormLogin.vue（输入框样式优化）
+  - frontend/components/utils/BaseCard.vue（登录按钮样式能力增强）
+  - frontend/pages/auth.vue（移除社交登录，仅保留表单）
+  - frontend/pages/index.vue（首页登录态分流）
+  - frontend/components/layout/LocaleMenu.vue（语言名称显示）
+  - frontend/i18n/index.js（默认语言调整）
+  - frontend/components/layout/TheFooter.vue（页脚文案）
+

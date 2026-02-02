@@ -282,6 +282,9 @@ text_tasks = [
     ProjectType.SEQUENCE_LABELING,
     ProjectType.SEQ2SEQ,
     ProjectType.INTENT_DETECTION_AND_SLOT_FILLING,
+    # [EXPERIMENTAL-FEATURE-START]
+    ProjectType.KNOWLEDGE_CORRECTION,
+    # [EXPERIMENTAL-FEATURE-END]
 ]
 for task_id in text_tasks:
     Options.register(
@@ -351,24 +354,40 @@ Options.register(
 )
 
 # Sequence Labelling
-Options.register(
-    Option(
-        display_name=JSONL.name,
-        task_id=ProjectType.SEQUENCE_LABELING,
-        file_format=JSONL,
-        arg=ArgColumn,
-        file=SEQUENCE_LABELING_DIR / "example.jsonl",
+sequence_labeling_tasks = [
+    ProjectType.SEQUENCE_LABELING,
+    # [EXPERIMENTAL-FEATURE-START]
+    ProjectType.KNOWLEDGE_CORRECTION,
+    # [EXPERIMENTAL-FEATURE-END]
+]
+for task_id in sequence_labeling_tasks:
+    Options.register(
+        Option(
+            display_name=JSONL.name,
+            task_id=task_id,
+            file_format=JSONL,
+            arg=ArgColumn,
+            file=SEQUENCE_LABELING_DIR / "example.jsonl",
+        )
     )
-)
-Options.register(
-    Option(
-        display_name=CoNLL.name,
-        task_id=ProjectType.SEQUENCE_LABELING,
-        file_format=CoNLL,
-        arg=ArgCoNLL,
-        file=SEQUENCE_LABELING_DIR / "example.txt",
+    Options.register(
+        Option(
+            display_name=CoNLL.name,
+            task_id=task_id,
+            file_format=CoNLL,
+            arg=ArgCoNLL,
+            file=SEQUENCE_LABELING_DIR / "example.txt",
+        )
     )
-)
+    Options.register(
+        Option(
+            display_name=Excel.name,
+            task_id=task_id,
+            file_format=Excel,
+            arg=ArgColumn,
+            file=TEXT_CLASSIFICATION_DIR / "example.csv",
+        )
+    )
 
 # Relation Extraction
 Options.register(
@@ -427,6 +446,24 @@ Options.register(
         file_format=JSONL,
         arg=ArgNone,
         file=INTENT_DETECTION_DIR / "example.jsonl",
+    )
+)
+Options.register(
+    Option(
+        display_name=CSV.name,
+        task_id=ProjectType.INTENT_DETECTION_AND_SLOT_FILLING,
+        file_format=CSV,
+        arg=ArgDelimiter,
+        file=TEXT_CLASSIFICATION_DIR / "example.csv",
+    )
+)
+Options.register(
+    Option(
+        display_name=Excel.name,
+        task_id=ProjectType.INTENT_DETECTION_AND_SLOT_FILLING,
+        file_format=Excel,
+        arg=ArgColumn,
+        file=TEXT_CLASSIFICATION_DIR / "example.csv",
     )
 )
 

@@ -68,6 +68,24 @@ class ExampleSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["filename", "is_confirmed", "upload_name", "assignments"]
 
+    def update(self, instance, validated_data):
+        new_text = validated_data.get("text")
+        if new_text and new_text != instance.text:
+            # [EXPERIMENTAL-FEATURE-START] Preserve original text in meta if not present
+            # We must update validated_data['meta'] because super().update will overwrite instance.meta
+            meta = validated_data.get("meta", instance.meta)
+            # Ensure meta is a dict (it might be None if not passed, though instance.meta defaults to dict)
+            if meta is None:
+                meta = {}
+            
+            if "original_text" not in meta:
+                # Use strict copy to avoid reference issues, though simple dict assignment is usually fine here
+                meta = dict(meta)
+                meta["original_text"] = instance.text
+                validated_data["meta"] = meta
+            # [EXPERIMENTAL-FEATURE-END]
+        return super().update(instance, validated_data)
+
 
 class ExampleStateSerializer(serializers.ModelSerializer):
     class Meta:

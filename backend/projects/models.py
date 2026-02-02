@@ -22,6 +22,9 @@ class ProjectType(models.TextChoices):
     BOUNDING_BOX = "BoundingBox"
     SEGMENTATION = "Segmentation"
     IMAGE_CAPTIONING = "ImageCaptioning"
+    # [EXPERIMENTAL-FEATURE-START]
+    KNOWLEDGE_CORRECTION = "KnowledgeCorrection"
+    # [EXPERIMENTAL-FEATURE-END]
 
 
 class Project(PolymorphicModel):
@@ -42,7 +45,7 @@ class Project(PolymorphicModel):
     allow_member_to_create_label_type = models.BooleanField(default=False)
 
     def add_admin(self):
-        admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
+        admin_role, _ = Role.objects.get_or_create(name=settings.ROLE_PROJECT_ADMIN)
         Member.objects.create(
             project=self,
             user=self.created_by,
@@ -120,6 +123,14 @@ class SequenceLabelingProject(Project):
     @property
     def is_text_project(self) -> bool:
         return True
+
+
+# [EXPERIMENTAL-FEATURE-START]
+class KnowledgeCorrectionProject(SequenceLabelingProject):
+    @property
+    def is_text_project(self) -> bool:
+        return True
+# [EXPERIMENTAL-FEATURE-END]
 
 
 class Seq2seqProject(Project):

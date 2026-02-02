@@ -12,13 +12,14 @@ from .pipeline.factories import create_parser
 from .pipeline.label import CategoryLabel, Label, RelationLabel, SpanLabel, TextLabel
 from .pipeline.label_types import LabelTypes
 from .pipeline.labels import Categories, Labels, Relations, Spans, Texts
-from .pipeline.makers import BinaryExampleMaker, ExampleMaker, LabelMaker
+from .pipeline.makers import BinaryExampleMaker, CommentMaker, ExampleMaker, LabelMaker
 from .pipeline.readers import (
     DEFAULT_LABEL_COLUMN,
     DEFAULT_TEXT_COLUMN,
     FileName,
     Reader,
 )
+from examples.models import Comment as CommentModel
 from label_types.models import CategoryType, LabelType, RelationType, SpanType
 from projects.models import Project, ProjectType
 
@@ -118,6 +119,33 @@ class SequenceLabelingDataset(DatasetWithSingleLabelType):
     label_type = SpanType
     labels_class = Spans
 
+    def __init__(self, reader: Reader, project: Project, **kwargs):
+        super().__init__(reader, project, **kwargs)
+        # [EXPERIMENTAL-FEATURE]
+        self.comment_maker = CommentMaker()
+
+    def save(self, user: User, batch_size: int = 1000):
+        for records in self.reader.batch(batch_size):
+            # create examples
+            examples = Examples(self.example_maker.make(records))
+            examples.save()
+
+            # create label types
+            labels = self.labels_class(self.label_maker.make(records), self.types)
+            labels.clean(self.project)
+            labels.save_types(self.project)
+
+            # create Labels
+            labels.save(user, examples)
+
+            # [EXPERIMENTAL-FEATURE-START] create Comments
+            comments_data = self.comment_maker.make(records)
+            comments = [
+                c.create(user, examples[c.example_uuid]) for c in comments_data if c.example_uuid in examples
+            ]
+            CommentModel.objects.bulk_create(comments)
+            # [EXPERIMENTAL-FEATURE-END]
+
 
 class Seq2seqDataset(DatasetWithSingleLabelType):
     data_class = TextData
@@ -214,6 +242,9 @@ def select_dataset(project: Project, task: str, file_format: Format) -> Type[Dat
         ProjectType.BOUNDING_BOX: BinaryDataset,
         ProjectType.SEGMENTATION: BinaryDataset,
         ProjectType.SPEECH2TEXT: BinaryDataset,
+        # [EXPERIMENTAL-FEATURE-START]
+        ProjectType.KNOWLEDGE_CORRECTION: SequenceLabelingDataset,
+        # [EXPERIMENTAL-FEATURE-END]
     }
     if task not in mapping:
         task = project.project_type

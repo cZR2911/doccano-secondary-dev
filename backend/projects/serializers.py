@@ -6,6 +6,9 @@ from .models import (
     ImageCaptioningProject,
     ImageClassificationProject,
     IntentDetectionAndSlotFillingProject,
+    # [EXPERIMENTAL-FEATURE-START]
+    KnowledgeCorrectionProject,
+    # [EXPERIMENTAL-FEATURE-END]
     Member,
     Project,
     SegmentationProject,
@@ -106,6 +109,13 @@ class SequenceLabelingProjectSerializer(ProjectSerializer):
         fields = ProjectSerializer.Meta.fields + ["allow_overlapping", "grapheme_mode", "use_relation"]
 
 
+# [EXPERIMENTAL-FEATURE-START]
+class KnowledgeCorrectionProjectSerializer(SequenceLabelingProjectSerializer):
+    class Meta(SequenceLabelingProjectSerializer.Meta):
+        model = KnowledgeCorrectionProject
+# [EXPERIMENTAL-FEATURE-END]
+
+
 class Seq2seqProjectSerializer(ProjectSerializer):
     class Meta(ProjectSerializer.Meta):
         model = Seq2seqProject
@@ -145,4 +155,7 @@ class ProjectPolymorphicSerializer(PolymorphicSerializer):
     model_serializer_mapping = {
         Project: ProjectSerializer,
         **{cls.Meta.model: cls for cls in ProjectSerializer.__subclasses__()},
+        # [EXPERIMENTAL-FEATURE-START]
+        KnowledgeCorrectionProject: KnowledgeCorrectionProjectSerializer,
+        # [EXPERIMENTAL-FEATURE-END]
     }

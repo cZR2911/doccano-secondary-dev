@@ -1,0 +1,12 @@
+【1.29改动记录】_2026-01-29
+
+1. **项目初始化**
+   - 完成 Doccano 项目源码拉取与本地环境初步配置。
+   - 熟悉项目前后端目录结构 (Django + Nuxt.js)。
+
+2. **前端国际化 (i18n) 调整**
+   - 修改 `frontend/i18n/index.js`，调整默认语言配置，确保系统启动即为目标语言（中文）。
+
+3. **环境依赖安装**
+   - 安装 Python 后端依赖 (requirements.txt/poetry)。
+   - 安装 Node.js 前端依赖 (yarn install)。

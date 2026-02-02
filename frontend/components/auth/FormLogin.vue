@@ -1,8 +1,9 @@
 <template>
   <base-card
     :disabled="!valid"
-    :title="$t('user.login')"
     :agree-text="$t('user.login')"
+    contained
+    block
     @agree="tryLogin"
   >
     <template #content>
@@ -15,7 +16,11 @@
           :rules="userNameRules($t('rules.userNameRules'))"
           :label="$t('user.username')"
           name="username"
-          :prepend-icon="mdiAccount"
+          :prepend-inner-icon="mdiAccount"
+          outlined
+          dense
+          color="primary"
+          class="mt-4"
           type="text"
           autofocus
           @keyup.enter="tryLogin"
@@ -26,7 +31,10 @@
           :rules="passwordRules($t('rules.passwordRules'))"
           :label="$t('user.password')"
           name="password"
-          :prepend-icon="mdiLock"
+          :prepend-inner-icon="mdiLock"
+          outlined
+          dense
+          color="primary"
           type="password"
           @keyup.enter="tryLogin"
         />

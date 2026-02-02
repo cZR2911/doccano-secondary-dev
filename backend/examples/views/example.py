@@ -8,7 +8,7 @@ from examples.filters import ExampleFilter
 from examples.models import Example
 from examples.serializers import ExampleSerializer
 from projects.models import Member, Project
-from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
+from projects.permissions import IsProjectAdmin, IsProjectAdminOrApprover, IsProjectStaffAndReadOnly
 
 
 class ExampleList(generics.ListCreateAPIView):
@@ -29,9 +29,17 @@ class ExampleList(generics.ListCreateAPIView):
         if member.is_admin():
             return self.model.objects.filter(project=self.project)
 
-        queryset = self.model.objects.filter(project=self.project, assignments__assignee=self.request.user)
+        # [MODIFIED] Allow access if collaborative annotation is enabled
+        if self.project.collaborative_annotation:
+            queryset = self.model.objects.filter(project=self.project)
+        else:
+            queryset = self.model.objects.filter(project=self.project, assignments__assignee=self.request.user)
+
         if self.project.random_order:
-            queryset = queryset.order_by("assignments__id")
+            if self.project.collaborative_annotation:
+                queryset = queryset.order_by("?")
+            else:
+                queryset = queryset.order_by("assignments__id")
         return queryset
 
     def perform_create(self, serializer):
@@ -51,4 +59,4 @@ class ExampleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Example.objects.all()
     serializer_class = ExampleSerializer
     lookup_url_kwarg = "example_id"
-    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
+    permission_classes = [IsAuthenticated & (IsProjectAdminOrApprover | IsProjectStaffAndReadOnly)]

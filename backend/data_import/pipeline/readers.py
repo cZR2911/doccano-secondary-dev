@@ -46,6 +46,10 @@ class Parser(abc.ABC):
         """Parses the file and returns the dictionary."""
         raise NotImplementedError("Please implement this method in the subclass.")
 
+    def parse_item(self, filename: "FileName") -> Iterator[Dict[Any, Any]]:
+        """Parses the file item."""
+        return self.parse(filename.full_path)
+
     @property
     def errors(self) -> List[FileParseException]:
         """Returns parsing errors."""
@@ -66,7 +70,7 @@ class Reader(BaseReader):
 
     def __iter__(self) -> Iterator[Dict[Any, Any]]:
         for filename in self.filenames:
-            rows = self.parser.parse(filename.full_path)
+            rows = self.parser.parse_item(filename)
             for row in rows:
                 yield {
                     UUID_COLUMN: uuid.uuid4(),

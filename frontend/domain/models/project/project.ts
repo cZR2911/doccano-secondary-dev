@@ -9,6 +9,9 @@ export const ImageCaptioning = 'ImageCaptioning'
 export const BoundingBox = 'BoundingBox'
 export const Segmentation = 'Segmentation'
 export const Speech2text = 'Speech2text'
+// [EXPERIMENTAL-FEATURE-START]
+export const KnowledgeCorrection = 'KnowledgeCorrection'
+// [EXPERIMENTAL-FEATURE-END]
 
 export const allProjectTypes = <const>[
   DocumentClassification,
@@ -19,7 +22,10 @@ export const allProjectTypes = <const>[
   ImageCaptioning,
   BoundingBox,
   Segmentation,
-  Speech2text
+  Speech2text,
+  // [EXPERIMENTAL-FEATURE-START]
+  KnowledgeCorrection
+  // [EXPERIMENTAL-FEATURE-END]
 ]
 export type ProjectType = (typeof allProjectTypes)[number]
 const MIN_LENGTH = 1
@@ -44,7 +50,13 @@ export const canDefineCategory = (projectType: ProjectType): boolean => {
 }
 
 export const canDefineSpan = (projectType: ProjectType): boolean => {
-  return [SequenceLabeling, IntentDetectionAndSlotFilling].includes(projectType)
+  return [
+    SequenceLabeling,
+    IntentDetectionAndSlotFilling,
+    // [EXPERIMENTAL-FEATURE-START]
+    KnowledgeCorrection
+    // [EXPERIMENTAL-FEATURE-END]
+  ].includes(projectType)
 }
 
 export const canDefineLabel = (projectType: ProjectType): boolean => {

@@ -3,6 +3,8 @@ import os
 import sys
 
 if __name__ == "__main__":
+    # Add project root to sys.path to prefer local source over site-packages
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.development")
     try:
         from django.core.management import execute_from_command_line

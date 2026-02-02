@@ -5,7 +5,6 @@
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
             <form-login :login="authenticateUser" />
-            <social-login :fetch-social-link="fetchSocialLink" />
           </v-col>
         </v-row>
       </v-container>
@@ -17,16 +16,14 @@
 import Vue from 'vue'
 import { mapActions } from 'vuex'
 import FormLogin from '@/components/auth/FormLogin.vue'
-import SocialLogin from '@/components/auth/SocialLogin.vue'
 
 export default Vue.extend({
   components: {
-    FormLogin,
-    SocialLogin
+    FormLogin
   },
 
   methods: {
-    ...mapActions('auth', ['authenticateUser', 'fetchSocialLink'])
+    ...mapActions('auth', ['authenticateUser'])
   }
 })
 </script>

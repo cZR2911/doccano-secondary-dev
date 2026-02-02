@@ -1,5 +1,5 @@
 <template>
-  <v-item-group v-model="selected" mandatory @change="$emit('input', allProjectTypes[selected])">
+  <v-item-group v-model="selected" mandatory @change="onSelectionChange">
     <v-row no-gutters>
       <v-col v-for="(item, i) in allProjectTypes" :key="i">
         <v-item v-slot="{ active, toggle }">
@@ -15,6 +15,12 @@
                 {{ mdiCheckBold }}
               </v-icon>
               {{ translateTypeName(item, $t('overview.projectTypes')) }}
+              <span
+                v-if="item === 'KnowledgeCorrection'"
+                class="ml-2 grey--text text--darken-1"
+              >
+                (测试)
+              </span>
             </v-card-title>
           </v-card>
         </v-item>
@@ -60,7 +66,10 @@ export default Vue.extend({
         'image_captioning.jpg',
         'object_detection.jpg',
         'segmentation.jpg',
-        'speech_to_text.png'
+        'speech_to_text.png',
+        // [EXPERIMENTAL-FEATURE-START]
+        'sequence_labeling.png'
+        // [EXPERIMENTAL-FEATURE-END]
       ]
     }
   },
@@ -69,6 +78,10 @@ export default Vue.extend({
     translateTypeName(type: ProjectType, types: any): string {
       const index = allProjectTypes.indexOf(type)
       return types[index]
+    },
+
+    onSelectionChange() {
+      this.$emit('input', this.allProjectTypes[this.selected])
     }
   }
 })
