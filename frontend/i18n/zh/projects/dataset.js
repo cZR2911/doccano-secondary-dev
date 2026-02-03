@@ -30,7 +30,7 @@ export default {
   deleteBulkDocumentsMessage: '你确定要从这个项目中删除全部文档吗？',
   pageText: '{0}-{1} 共 {2}',
   column_data: 'Excel 列名 (文本)',
-  column_data_hint: '指定包含文本的列名。支持多列合并（用逗号分隔，如：Title, Body）。留空则自动检测。',
+  column_data_hint: '指定包含文本的列名。支持多列合并（用逗号分隔，如：Title, Body）。输入 * 可合并所有列。留空则自动检测。',
   column_label: 'Excel 列名 (标签)',
   column_label_hint: '指定包含标签的列名。',
   delimiter: '分隔符',

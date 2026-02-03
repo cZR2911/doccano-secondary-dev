@@ -46,11 +46,6 @@
       </template>
       <v-list>
         <v-subheader>{{ getUsername }}</v-subheader>
-        <v-list-item>
-          <v-list-item-content>
-            <v-switch :input-value="isRTL" :label="direction" class="ms-1" @change="toggleRTL" />
-          </v-list-item-content>
-        </v-list-item>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>{{ mdiLogout }}</v-icon>

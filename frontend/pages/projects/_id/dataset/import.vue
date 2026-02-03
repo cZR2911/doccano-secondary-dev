@@ -16,20 +16,43 @@
         outlined
       />
       <v-form v-model="valid">
-        <v-text-field
-          v-for="(item, key) in textFields"
-          :key="key"
-          v-model="option[key]"
-          :label="$te('dataset.' + key) ? $t('dataset.' + key) : item.title"
-          :hint="
-            $te('dataset.' + key + '_hint')
-              ? $t('dataset.' + key + '_hint')
-              : item.description
-          "
-          persistent-hint
-          :rules="requiredRules"
-          outlined
-        />
+        <template v-for="(item, key) in textFields">
+          <v-combobox
+            v-if="['column_data', 'column_label'].includes(key)"
+            :key="key"
+            v-model="option[key]"
+            :items="columns"
+            :label="$te('dataset.' + key) ? $t('dataset.' + key) : item.title"
+            :hint="
+              $te('dataset.' + key + '_hint')
+                ? $t('dataset.' + key + '_hint')
+                : item.description
+            "
+            persistent-hint
+            :rules="requiredRules"
+            multiple
+            chips
+            small-chips
+            deletable-chips
+            outlined
+            :append-outer-icon="mdiSelectAll"
+            @click:append-outer="selectAll(key)"
+          />
+          <v-text-field
+            v-else
+            :key="key"
+            v-model="option[key]"
+            :label="$te('dataset.' + key) ? $t('dataset.' + key) : item.title"
+            :hint="
+              $te('dataset.' + key + '_hint')
+                ? $t('dataset.' + key + '_hint')
+                : item.description
+            "
+            persistent-hint
+            :rules="requiredRules"
+            outlined
+          />
+        </template>
         <v-select
           v-for="(val, key) in selectFields"
           :key="key"
@@ -103,6 +126,7 @@ import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
 import 'filepond/dist/filepond.min.css'
 import Cookies from 'js-cookie'
 import vueFilePond from 'vue-filepond'
+import { mdiSelectAll } from '@mdi/js'
 const FilePond = vueFilePond(FilePondPluginFileValidateType)
 
 export default {
@@ -123,10 +147,12 @@ export default {
       catalog: [],
       selected: null,
       myFiles: [],
-      option: { column_data: '', column_label: '', delimiter: '' },
+      columns: [],
+      option: { column_data: [], column_label: [], delimiter: '' },
       taskId: null,
       polling: null,
       errors: [],
+      mdiSelectAll,
       headers: [
         { text: this.$t('dataset.filename'), value: 'filename' },
         { text: this.$t('dataset.line'), value: 'line' },
@@ -190,9 +216,14 @@ export default {
         const column_data = 'column_data'
         const column_label = 'column_label'
         if (column_data in this.option && column_label in this.option) {
+          let cData = this.option[column_data]
+          let cLabel = this.option[column_label]
+          if (Array.isArray(cData)) cData = cData.join(',')
+          if (Array.isArray(cLabel)) cLabel = cLabel.join(',')
+
           return item.example
-            .replaceAll(column_data, this.option[column_data])
-            .replaceAll(column_label, this.option[column_label])
+            .replaceAll(column_data, cData)
+            .replaceAll(column_label, cLabel)
             .trim()
         } else {
           return item.example.trim()
@@ -207,7 +238,11 @@ export default {
     selected() {
       const item = this.catalog.find((item) => item.displayName === this.selected)
       for (const [key, value] of Object.entries(item.properties)) {
-        this.option[key] = value.default
+        if (['column_data', 'column_label'].includes(key)) {
+          this.option[key] = value.default ? [value.default] : []
+        } else {
+          this.option[key] = value.default
+        }
       }
       this.myFiles = []
       for (const file of this.uploadedFiles) {
@@ -230,8 +265,28 @@ export default {
   methods: {
     handleFilePondProcessFile(error, file) {
       console.log(error)
+      if (!error) {
+        this.fetchColumns(file.serverId)
+      }
       this.uploadedFiles.push(file)
       this.$nextTick()
+    },
+    async fetchColumns(uploadId) {
+      try {
+        const { columns } = await this.$repositories.parse.getColumns(
+          this.$route.params.id,
+          uploadId
+        )
+        this.columns = columns
+        // Automatically remove non-existent default columns (text/label)
+        for (const key in this.option) {
+          if (Array.isArray(this.option[key])) {
+            this.option[key] = this.option[key].filter((col) => columns.includes(col))
+          }
+        }
+      } catch (e) {
+        console.error(e)
+      }
     },
     handleFilePondRemoveFile(error, file) {
       console.log(error)
@@ -244,12 +299,18 @@ export default {
     async importDataset() {
       this.isImporting = true
       const item = this.catalog.find((item) => item.displayName === this.selected)
+      const options = { ...this.option }
+      for (const key in options) {
+        if (Array.isArray(options[key])) {
+          options[key] = options[key].join(',')
+        }
+      }
       this.taskId = await this.$repositories.parse.analyze(
         this.$route.params.id,
         item.name,
         item.taskId,
         this.uploadedFiles.map((item) => item.serverId),
-        this.option
+        options
       )
     },
     pollData() {
@@ -278,6 +339,13 @@ export default {
         return 'None'
       } else {
         return text
+      }
+    },
+    selectAll(key) {
+      if (this.option[key].length === this.columns.length) {
+        this.option[key] = []
+      } else {
+        this.option[key] = [...this.columns]
       }
     }
   }

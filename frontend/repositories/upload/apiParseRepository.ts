@@ -21,6 +21,12 @@ export class APIParseRepository {
     return response.data.task_id
   }
 
+  async getColumns(projectId: string, uploadId: string): Promise<any> {
+    const url = `/projects/${projectId}/upload/columns?upload_id=${uploadId}`
+    const response = await this.request.get(url)
+    return response.data
+  }
+
   revert(serverId: string): void {
     const url = `/fp/revert/`
     this.request.delete(url, serverId)
