@@ -14,12 +14,12 @@ $ProjectRoot = "C:\Users\mlian\doccano"
 Write-Host "1. 启动 Backend (Port 8000)..." -ForegroundColor Green
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$ProjectRoot'; conda activate doccano; cd backend; python manage.py runserver"
 
-# 2. 启动 Celery Worker
-Write-Host "2. 启动 Celery Worker..." -ForegroundColor Green
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$ProjectRoot'; conda activate doccano; cd backend; celery -A config worker -l info --pool=solo"
+# 2. 启动 Celery Worker (开发模式下已启用同步处理，无需启动 Celery)
+# Write-Host "2. 启动 Celery Worker..." -ForegroundColor Green
+# Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$ProjectRoot'; conda activate doccano; cd backend; celery -A config worker -l info --pool=solo"
 
-# 3. 启动 Frontend (Nuxt)
-Write-Host "3. 启动 Frontend (Port 3000)..." -ForegroundColor Green
+# 2. 启动 Frontend (Nuxt)
+Write-Host "2. 启动 Frontend (Port 3000)..." -ForegroundColor Green
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$ProjectRoot'; cd frontend; yarn dev"
 
 Write-Host "------------------------------------------------" -ForegroundColor Yellow

@@ -27,7 +27,7 @@
 
 ## 方式二：手动启动 (分步详解)
 
-如果你需要分别查看日志或手动控制，请按照以下步骤开启 **3 个独立的终端窗口**。
+如果你需要分别查看日志或手动控制，请按照以下步骤开启 **2 个独立的终端窗口**。
 
 ### 第 1 个窗口：启动后端 (Backend)
 > 确保进入 conda 环境
@@ -40,18 +40,7 @@ python manage.py runserver
 ```
 *成功标志：看到 `Starting development server at http://127.0.0.1:8000/`*
 
-### 第 2 个窗口：启动任务队列 (Celery)
-> 推荐启动。注：最新版本已开启开发模式同步处理，即使不启动 Celery，上传文件也不会卡住，但生产环境仍需依赖。
-
-```powershell
-cd C:\Users\mlian\doccano
-conda activate doccano
-cd backend
-celery -A config worker -l info --pool=solo
-```
-*成功标志：看到 `[config] .> app: config:0x...` 和 `[tasks]` 列表*
-
-### 第 3 个窗口：启动前端 (Frontend)
+### 第 2 个窗口：启动前端 (Frontend)
 > 开发时请访问此端口
 
 ```powershell
