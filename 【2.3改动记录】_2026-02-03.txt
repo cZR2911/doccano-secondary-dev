@@ -1,0 +1,26 @@
+【2.3改动记录】_2026-02-03
+
+1. **前端界面深度汉化 (Localization)**
+   - **新增本地化键值**：
+     - 在 `frontend/i18n/zh/projects/dataset.js` 中新增了 `fileFormat`, `dropFiles` 等7个缺失的中文翻译键值，解决了数据集导入页面的英文残留。
+     - 在 `frontend/i18n/zh/projects/statistics.js` 中新增了 `categoryDistribution`, `spanDistribution` 等3个统计图表的中文标题。
+     - 补充了其他散落在各处的缺失翻译（如“Actions”, “Import Dataset”等）。
+   - **界面文本替换**：
+     - 全面排查并替换了 Sidebar（侧边栏）、Project Settings（项目设置）、Import/Export（导入导出）、Annotation Workspace（标注工作台）以及 Statistics（统计）页面中的硬编码英文。
+     - 使用 `$t()` 函数替换了所有硬编码字符串，确保语言切换功能的完整性。
+
+2. **代码规范与格式修复 (Linting)**
+   - **ESLint `max-len` 修复**：
+     - 针对汉化过程中因文本替换导致的代码行过长问题，进行了批量修复。
+     - 涉及文件包括 `Comment.vue`, `create-project.vue`, `export.vue`, `settings/index.vue` 等。
+     - 通过合理的标签属性换行，解决了 CI/CD 流程中的代码风格检查报错 (Line length > 100 characters)。
+
+3. **版本控制与同步 (Git)**
+   - **GitHub 同步**：
+     - 将本地所有改动（包括汉化文件、修复的代码、新增的改动记录）同步推送至 GitHub 仓库。
+     - 提交信息：`feat: 汉化清理与 ESLint 修复`。
+     - 确保了本地开发环境与远程仓库 (`doccano-secondary-dev`) 的一致性。
+
+4. **文档更新**
+   - **改动记录生成**：
+     - 生成了本次改动记录文件 `【2.3改动记录】_2026-02-03.txt`，详细归档了开发内容。
