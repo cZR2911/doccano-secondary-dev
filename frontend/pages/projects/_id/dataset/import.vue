@@ -21,7 +21,11 @@
           :key="key"
           v-model="option[key]"
           :label="$te('dataset.' + key) ? $t('dataset.' + key) : item.title"
-          :hint="$te('dataset.' + key + '_hint') ? $t('dataset.' + key + '_hint') : item.description"
+          :hint="
+            $te('dataset.' + key + '_hint')
+              ? $t('dataset.' + key + '_hint')
+              : item.description
+          "
           persistent-hint
           :rules="requiredRules"
           outlined
