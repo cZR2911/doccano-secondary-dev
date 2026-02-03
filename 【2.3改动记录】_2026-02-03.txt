@@ -37,3 +37,12 @@
       - **通配符支持**：后端 `ExampleMaker` 新增 `*` 通配符逻辑，允许合并所有非内部列，解决列名不确定的极端场景。
       - **别名库扩充**：扩展了自动检测的别名列表，新增 `Title`, `Body`, `Prompt`, `Response` 等 20+ 常用词汇。
     - **解决问题**：彻底解决了用户在导入 Excel 时因默认列名不明确或自动检测失败导致“只能标注第一列”的问题，提升了操作直观性和容错率。
+
+6. **UI 优化与品牌化 (UI & Branding)**
+   - **移除 YouTube 视频**：
+     - 在新建任务后的欢迎页 (`frontend/pages/projects/_id/index.vue`)，将原有的 YouTube 视频引导移除，替换为清晰的中文文字操作指引，避免国内网络环境无法加载的问题。
+   - **图标替换 (Favicon)**：
+     - 将浏览器标签页图标从默认图标更改为公司橙色 Logo (`frontend/static/favicon.png`)，增强品牌一致性。
+     - 更新 `nuxt.config.js` 指向新的图标文件。
+   - **文案优化**：
+     - 更新了中英文版的主页指引文案 (`frontend/i18n/*/projects/home.js`)，使其更符合实际操作流程。
