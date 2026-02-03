@@ -41,7 +41,7 @@ python manage.py runserver
 *成功标志：看到 `Starting development server at http://127.0.0.1:8000/`*
 
 ### 第 2 个窗口：启动任务队列 (Celery)
-> 必须启动，否则上传文件会卡在“转圈圈”
+> 推荐启动。注：最新版本已开启开发模式同步处理，即使不启动 Celery，上传文件也不会卡住，但生产环境仍需依赖。
 
 ```powershell
 cd C:\Users\mlian\doccano
