@@ -9,8 +9,10 @@
           {{ item.title }}
         </v-stepper-step>
         <v-stepper-content :step="index + 1">
-          <v-card v-if="e6 === index + 1" class="mb-12" width="560" height="315">
-            <youtube ref="youtube" :video-id="item.videoId" />
+          <v-card v-if="e6 === index + 1" class="mb-12" flat>
+            <v-card-text class="text-h6">
+              {{ item.description }}
+            </v-card-text>
           </v-card>
           <v-btn color="primary mt-5" @click="next">
             {{ $t('generic.continue') }}
@@ -38,22 +40,34 @@ export default {
     return {
       e6: 1,
       items: [
-        { title: this.$t('projectHome.importData'), videoId: 'dA4ID1DSxCE' },
-        { title: this.$t('projectHome.createLabels'), videoId: '1bSML270quU' },
-        { title: this.$t('projectHome.addMembers'), videoId: 'NI09dcBz-qA' },
+        {
+          title: this.$t('projectHome.importData'),
+          description: this.$t('projectHome.importDataDescription')
+        },
+        {
+          title: this.$t('projectHome.createLabels'),
+          description: this.$t('projectHome.createLabelsDescription')
+        },
+        {
+          title: this.$t('projectHome.addMembers'),
+          description: this.$t('projectHome.addMembersDescription')
+        },
         {
           title: this.$t('projectHome.defineGuideline'),
-          videoId: 'AvvX3Xs32nA'
+          description: this.$t('projectHome.defineGuidelineDescription')
         },
         {
           title: this.$t('projectHome.annotateDataset'),
-          videoId: 'F3XoSdyiMhA'
+          description: this.$t('projectHome.annotateDatasetDescription')
         },
         {
           title: this.$t('projectHome.viewStatistics'),
-          videoId: 'kfRpa0mNQMY'
+          description: this.$t('projectHome.viewStatisticsDescription')
         },
-        { title: this.$t('projectHome.exportDataset'), videoId: 'Pfy_QcHEeQ4' }
+        {
+          title: this.$t('projectHome.exportDataset'),
+          description: this.$t('projectHome.exportDatasetDescription')
+        }
       ]
     }
   },
