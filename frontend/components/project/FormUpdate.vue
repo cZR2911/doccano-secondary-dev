@@ -12,7 +12,7 @@
             <v-checkbox
               v-if="project.canDefineLabel"
               v-model="project.allowMemberToCreateLabelType"
-              label="Allow project members to create label types"
+              :label="$t('settings.allowMemberToCreateLabelType')"
             />
           </v-col>
         </v-row>
@@ -20,7 +20,7 @@
     </v-card-text>
     <v-card-actions class="ps-4 pt-0">
       <v-btn v-if="!isEditing" color="primary" class="text-capitalize" @click="isEditing = true">
-        Edit
+        {{ $t('generic.edit') }}
       </v-btn>
       <v-btn
         v-show="isEditing"

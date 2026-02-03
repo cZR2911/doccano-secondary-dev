@@ -36,15 +36,36 @@ class ExampleMaker:
     def make(self, df: pd.DataFrame) -> List[Example]:
         if not self.check_column_existence(df):
             return []
+
+        # Handle multiple columns concatenation
+        # We split by comma and strip whitespace to support "Col A, Col B"
+        column_list = [c.strip() for c in self.column_data.split(',')]
+        if len(column_list) > 1:
+            # Create a merged column from multiple columns
+            merged_col_name = f"merged_{uuid.uuid4().hex[:8]}"
+            # Filter existing columns only
+            existing_cols = [c for c in column_list if c in df.columns]
+            if existing_cols:
+                # Merge existing columns with newline
+                df[merged_col_name] = df[existing_cols].fillna('').astype(str).agg('\n'.join, axis=1)
+                self.column_data = merged_col_name
+            elif self.column_data in df.columns:
+                # Fallback to literal column name if it contains a comma but exists as is
+                pass
+
         self.check_value_existence(df)
         # make dataframe without exclude columns and missing data
         df_with_data_column = df.loc[:, ~df.columns.isin(self.exclude_columns)]
         
-        # Convert to string and strip whitespace before checking for empty text
-        df_with_data_column[self.column_data] = df_with_data_column[self.column_data].astype(str).str.strip()
-        df_with_data_column = df_with_data_column[df_with_data_column[self.column_data] != ""]
-        df_with_data_column = df_with_data_column[df_with_data_column[self.column_data] != "nan"]
-        df_with_data_column = df_with_data_column[df_with_data_column[self.column_data] != "None"]
+        # Ensure the target data column is treated as string
+        df_with_data_column[self.column_data] = df_with_data_column[self.column_data].fillna('').astype(str).str.strip()
+        
+        # Filter out empty records
+        df_with_data_column = df_with_data_column[
+            (df_with_data_column[self.column_data] != "") &
+            (df_with_data_column[self.column_data].lower() != "nan") &
+            (df_with_data_column[self.column_data].lower() != "none")
+        ]
 
         examples = []
         for row in df_with_data_column.to_dict(orient="records"):
@@ -60,41 +81,62 @@ class ExampleMaker:
         return examples
 
     def check_column_existence(self, df: pd.DataFrame) -> bool:
-        if self.column_data not in df.columns:
-            # Try to find a fallback column from known aliases
-            if self.column_data == DEFAULT_TEXT_COLUMN:
-                # Broaden aliases and clean them
-                aliases = ['text', 'Text', 'TEXT', '文本', '内容', '句子', '方向', '工作内容', 'query', 'Query', 'question', 'Question', 'data', 'Data']
-                
-                # Check for exact matches first
-                for alias in aliases:
-                    if alias in df.columns:
-                        self.column_data = alias
-                        return True
-                
-                # Check for partial matches or case-insensitive matches
-                for col in df.columns:
-                    for alias in aliases:
-                        if alias.lower() in col.lower():
-                            self.column_data = col
-                            return True
+        # 1. Handle explicit multiple columns (comma-separated)
+        if ',' in self.column_data:
+            column_list = [c.strip() for c in self.column_data.split(',')]
+            existing_cols = [c for c in column_list if c in df.columns]
+            if existing_cols:
+                # At least one specified column exists, we can proceed
+                return True
+            # If the whole string with comma exists as a single column name, also allow
+            if self.column_data in df.columns:
+                return True
 
-                # If there's only one non-internal column, use it as text
-                internal_cols = {UPLOAD_NAME_COLUMN, UUID_COLUMN, LINE_NUMBER_COLUMN, "filename"}
-                external_cols = [c for c in df.columns if c not in internal_cols]
-                if len(external_cols) >= 1:
-                    # Pick the first non-internal column as a last resort
-                    self.column_data = external_cols[0]
-                    return True
+        # 2. Standard check for single column
+        if self.column_data in df.columns:
+            return True
+
+        # 3. Fallback logic for default "text" column
+        if self.column_data == DEFAULT_TEXT_COLUMN:
+            # Common aliases for text content
+            aliases = ['text', 'Text', 'TEXT', '文本', '内容', '句子', '方向', '工作内容', 'query', 'Query', 'question', 'Question', 'data', 'Data']
             
-            # Filter out internal columns for clearer error message
+            # Find all columns that match any alias (case-insensitive)
+            matched_cols = []
+            for col in df.columns:
+                if any(alias.lower() == str(col).lower() for alias in aliases):
+                    matched_cols.append(col)
+            
+            if matched_cols:
+                # If multiple aliases found, suggest merging them
+                self.column_data = ','.join(matched_cols)
+                return True
+
+            # If no aliases found, try partial matches
+            partial_matches = []
+            for col in df.columns:
+                if any(alias.lower() in str(col).lower() for alias in aliases):
+                    partial_matches.append(col)
+            
+            if partial_matches:
+                self.column_data = ','.join(partial_matches)
+                return True
+
+            # Last resort: If multiple external columns exist, merge them all
             internal_cols = {UPLOAD_NAME_COLUMN, UUID_COLUMN, LINE_NUMBER_COLUMN, "filename"}
-            available = ", ".join([c for c in df.columns if c not in internal_cols])
-            message = f"Column '{self.column_data}' not found in the file. Available columns: {available}"
-            for filename in df[UPLOAD_NAME_COLUMN].unique():
-                self._errors.append(FileParseException(filename, 0, message))
-            return False
-        return True
+            external_cols = [c for c in df.columns if c not in internal_cols]
+            if len(external_cols) > 0:
+                # Merge all external columns as a convenient default
+                self.column_data = ','.join(external_cols)
+                return True
+        
+        # 4. Error reporting if no column found
+        internal_cols = {UPLOAD_NAME_COLUMN, UUID_COLUMN, LINE_NUMBER_COLUMN, "filename"}
+        available = ", ".join([str(c) for c in df.columns if c not in internal_cols])
+        message = f"Column '{self.column_data}' not found. Available columns: {available}"
+        for filename in df[UPLOAD_NAME_COLUMN].unique():
+            self._errors.append(FileParseException(filename, 0, message))
+        return False
 
     def check_value_existence(self, df: pd.DataFrame):
         df_without_data_column = df[df[self.column_data].isnull()]
@@ -204,19 +246,33 @@ class LabelMaker:
         if not self.check_column_existence(df):
             return []
 
-        df_label = df.explode(self.column)
-        df_label = df_label[[UUID_COLUMN, self.column]]
-        df_label.dropna(subset=[self.column], inplace=True)
+        # Support multiple label columns separated by comma
+        column_list = [c.strip() for c in self.column.split(',')]
+        
         labels = []
-        for row in df_label.to_dict(orient="records"):
-            try:
-                label = self.label_class.parse(row[UUID_COLUMN], row[self.column])
-                labels.append(label)
-            except ValueError:
-                pass
+        for col in column_list:
+            if col not in df.columns:
+                continue
+            
+            df_label = df.explode(col)
+            df_label = df_label[[UUID_COLUMN, col]]
+            df_label.dropna(subset=[col], inplace=True)
+            for row in df_label.to_dict(orient="records"):
+                try:
+                    label = self.label_class.parse(row[UUID_COLUMN], row[col])
+                    labels.append(label)
+                except ValueError:
+                    pass
         return labels
 
     def check_column_existence(self, df: pd.DataFrame) -> bool:
+        # Support comma-separated columns
+        column_list = [c.strip() for c in self.column.split(',')]
+        if len(column_list) > 1:
+            # If any of the columns exist, we consider it valid
+            if any(col in df.columns for col in column_list):
+                return True
+
         if self.column not in df.columns:
             # Try to find a fallback column from known aliases
             if self.column == DEFAULT_LABEL_COLUMN:

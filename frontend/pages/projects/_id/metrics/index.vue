@@ -5,21 +5,21 @@
     </v-col>
     <v-col v-if="!!project.canDefineCategory" cols="12">
       <label-distribution
-        title="Category Distribution"
+        :title="$t('statistics.categoryDistribution')"
         :distribution="categoryDistribution"
         :label-types="categoryTypes"
       />
     </v-col>
     <v-col v-if="!!project.canDefineSpan" cols="12">
       <label-distribution
-        title="Span Distribution"
+        :title="$t('statistics.spanDistribution')"
         :distribution="spanDistribution"
         :label-types="spanTypes"
       />
     </v-col>
     <v-col v-if="!!project.canDefineRelation" cols="12">
       <label-distribution
-        title="Relation Distribution"
+        :title="$t('statistics.relationDistribution')"
         :distribution="relationDistribution"
         :label-types="relationTypes"
       />

@@ -27,11 +27,13 @@
 
             <v-list>
               <v-list-item>
-                <v-list-item-title @click="showEdit = true"> Edit </v-list-item-title>
+                <v-list-item-title @click="showEdit = true">
+                  {{ $t('generic.edit') }}
+                </v-list-item-title>
               </v-list-item>
               <v-list-item>
                 <v-list-item-title @click="$emit('delete-comment', comment)">
-                  Delete
+                  {{ $t('generic.delete') }}
                 </v-list-item-title>
               </v-list-item>
             </v-list>
@@ -49,14 +51,14 @@
           <v-textarea v-model="editText" auto-grow rows="1" solo :rules="commentRules" />
         </v-row>
         <v-row justify="end">
-          <v-btn text class="text-capitalize" @click="cancel"> Cancel </v-btn>
+          <v-btn text class="text-capitalize" @click="cancel"> {{ $t('generic.cancel') }} </v-btn>
           <v-btn
             :disabled="!valid"
             color="primary"
             class="text-capitalize"
             @click="updateComment(editText)"
           >
-            Update
+            {{ $t('generic.update') }}
           </v-btn>
         </v-row>
       </v-form>
@@ -91,7 +93,7 @@ export default Vue.extend({
     return {
       showEdit: false,
       editText: this.comment.text,
-      commentRules: [(v: string) => !!v.trim() || 'Comment is required'],
+      commentRules: [(v: string) => !!v.trim() || this.$t('comments.required')],
       valid: false,
       mdiAccountCircle,
       mdiDotsVertical

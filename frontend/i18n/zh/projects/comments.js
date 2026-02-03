@@ -7,5 +7,6 @@ export default {
   created_at: '创建',
   document: '文档',
   send: '发送',
-  message: '输入纠错建议或批注'
+  message: '输入纠错建议或批注',
+  required: '请输入批注内容'
 }

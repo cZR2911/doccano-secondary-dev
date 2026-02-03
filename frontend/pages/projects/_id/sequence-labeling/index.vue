@@ -148,7 +148,7 @@
       <annotation-progress :progress="progress" />
       <v-card class="mt-4">
         <v-card-title>
-          Label Types
+          {{ $t('annotation.labelTypes') }}
           <v-spacer />
           <v-btn icon @click="showLabelTypes = !showLabelTypes">
             <v-icon>{{ showLabelTypes ? mdiChevronUp : mdiChevronDown }}</v-icon>
@@ -158,8 +158,8 @@
           <v-card-text v-show="showLabelTypes">
             <v-switch v-if="useRelationLabeling" v-model="relationMode">
               <template #label>
-                <span v-if="relationMode">Relation</span>
-                <span v-else>Span</span>
+                <span v-if="relationMode">{{ $t('annotation.relationMode') }}</span>
+                <span v-else>{{ $t('annotation.spanMode') }}</span>
               </template>
             </v-switch>
             <v-chip-group v-model="selectedLabelIndex" column>
@@ -408,7 +408,7 @@ export default {
         const label = this.spanTypes.find((l) => l.id === labelId)
         if (label) {
           const selectedText = this.doc.text.slice(startOffset, endOffset)
-          const msg = `请输入针对 [${label.text}] "${selectedText}" 的批注/纠错建议 (Leave empty to skip):`
+          const msg = this.$t('annotation.correctionPrompt', [label.text, selectedText])
           const comment = window.prompt(msg)
           if (comment) {
             await this.$repositories.comment.create(

@@ -11,6 +11,10 @@ export default {
   deleteProjectTitle: '删除项目',
   deleteProjectMessage: '你确定要删除这些项目吗？',
   search: '搜索',
+  allowSingleLabel: '允许单标签',
+  allowOverlappingSpans: '允许重叠跨度',
+  useRelation: '使用关系标注',
+  graphemeMode: '将变体字符（如表情符号、换行符等）计算为一个字符',
   projectTypes: [
     '文本分类',
     '序列标注',

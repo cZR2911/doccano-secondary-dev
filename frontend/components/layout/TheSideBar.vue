@@ -87,7 +87,7 @@ export default {
         },
         {
           icon: mdiLabel,
-          text: 'Relations',
+          text: this.$t('links.links'),
           link: 'links',
           isVisible:
             (this.isProjectAdmin || this.project.allowMemberToCreateLabelType) &&
@@ -101,7 +101,7 @@ export default {
         },
         {
           icon: mdiCommentAccountOutline,
-          text: 'Comments',
+          text: this.$t('comments.comments'),
           link: 'comments',
           isVisible: this.isProjectAdmin
         },

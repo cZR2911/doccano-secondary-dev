@@ -9,7 +9,7 @@
         {{ $t('generic.create') }}
       </v-btn>
       <v-btn class="text-capitalize ms-2" color="primary" :disabled="!canClone" @click.stop="clone">
-        Clone
+        {{ $t('generic.clone') }}
       </v-btn>
       <v-btn
         class="text-capitalize ms-2"

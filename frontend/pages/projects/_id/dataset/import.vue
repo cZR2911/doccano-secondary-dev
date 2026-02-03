@@ -12,7 +12,7 @@
         :items="catalog"
         item-text="displayName"
         :menu-props="{ maxHeight: 600 }"
-        label="File format"
+        :label="$t('dataset.fileFormat')"
         outlined
       />
       <v-form v-model="valid">
@@ -49,7 +49,7 @@
         <pre>{{ example }}</pre>
       </v-sheet>
       <div v-if="selected === 'JSONL(Relation)'">
-        <p class="body-1">For readability, the above format can be displayed as follows:</p>
+        <p class="body-1">{{ $t('dataset.importDataMessage') }}</p>
         <v-sheet :dark="!$vuetify.theme.dark" :light="$vuetify.theme.dark" class="mb-5 pa-5">
           <pre>{{ JSON.stringify(JSON.parse(example.replaceAll("'", '"')), null, 4) }}</pre>
         </v-sheet>
@@ -58,7 +58,7 @@
         v-if="selected && acceptedFileTypes !== '*'"
         ref="pond"
         chunk-uploads="true"
-        label-idle="Drop files here..."
+        :label-idle="$t('dataset.dropFiles')"
         :allow-multiple="true"
         :accepted-file-types="acceptedFileTypes"
         :server="server"
@@ -70,7 +70,7 @@
         v-if="selected && acceptedFileTypes === '*'"
         ref="pond"
         chunk-uploads="true"
-        label-idle="Drop files here..."
+        :label-idle="$t('dataset.dropFiles')"
         :allow-multiple="true"
         :server="server"
         :files="myFiles"
@@ -122,11 +122,11 @@ export default {
       polling: null,
       errors: [],
       headers: [
-        { text: 'Filename', value: 'filename' },
-        { text: 'Line', value: 'line' },
-        { text: 'Message', value: 'message' }
+        { text: this.$t('dataset.filename'), value: 'filename' },
+        { text: this.$t('dataset.line'), value: 'line' },
+        { text: this.$t('dataset.message'), value: 'message' }
       ],
-      requiredRules: [(v) => !!v || 'Field value is required'],
+      requiredRules: [(v) => !!v || this.$t('dataset.fieldRequired')],
       server: {
         url: '/v1/fp',
         headers: {

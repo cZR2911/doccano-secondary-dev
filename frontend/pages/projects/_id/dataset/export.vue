@@ -13,7 +13,7 @@
           :items="formats"
           hide-details="auto"
           item-text="name"
-          label="File format"
+          :label="$t('dataset.fileFormat')"
           outlined
           :rules="fileFormatRules($t('rules.fileFormatRules'))"
         />
@@ -25,7 +25,11 @@
         >
           <pre>{{ example }}</pre>
         </v-sheet>
-        <v-checkbox v-model="exportApproved" label="Export only approved documents" hide-details />
+        <v-checkbox
+          v-model="exportApproved"
+          :label="$t('dataset.exportOnlyApproved')"
+          hide-details
+        />
       </v-form>
     </v-card-text>
     <v-card-actions>

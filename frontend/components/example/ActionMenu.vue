@@ -34,12 +34,12 @@ export default Vue.extend({
           event: 'download'
         },
         {
-          title: 'Assign to member',
+          title: this.$t('dataset.assignToMember'),
           icon: mdiAccountCheck,
           event: 'assign'
         },
         {
-          title: 'Reset Assignment',
+          title: this.$t('dataset.resetAssignment'),
           icon: mdiUpdate,
           event: 'reset'
         }

@@ -7,10 +7,14 @@ export default {
   filterOption3: '未标注',
   guidelineTooltip: '显示指南',
   guidelinePopupTitle: '标注指南',
-  commentTooltip: '点击对文档进行评论',
-  commentPopupTitle: '评论',
+  commentTooltip: '查看批注与纠错',
+  commentPopupTitle: '批注与纠错',
   metadataDefaultMessage: '没有数据可获得',
   key: '键',
   value: '值',
-  newText: '下一条'
+  newText: '下一条',
+  labelTypes: '标签类型',
+  relationMode: '关系模式',
+  spanMode: '跨度模式',
+  correctionPrompt: '请输入针对 [{0}] "{1}" 的批注/纠错建议 (留空则跳过):'
 }

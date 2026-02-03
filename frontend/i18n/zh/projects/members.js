@@ -1,7 +1,7 @@
 export default {
   members: '成员',
   role: '角色',
-  updateRole: '更行角色',
+  updateRole: '更新角色',
   addMember: '添加成员',
   userSearchAPIs: '用户搜索接口',
   userSearchPrompt: '开始搜索',

@@ -3,6 +3,16 @@ export default {
   actions: '操作',
   importDataset: '导入数据集',
   exportDataset: '导出数据集',
+  fileFormat: '文件格式',
+  importDataMessage: '为了提高可读性，上述格式可以显示如下：',
+  dropFiles: '拖拽文件到此处...',
+  filename: '文件名',
+  line: '行号',
+  message: '信息',
+  fieldRequired: '此项必填',
+  exportOnlyApproved: '仅导出已审核通过的文档',
+  assignToMember: '分配成员',
+  resetAssignment: '重置分配',
   text: '文本',
   metadata: '元数据',
   action: '操作',
@@ -18,5 +28,5 @@ export default {
   deleteDocumentsMessage: '你确定要从这个项目中删除这些文档吗？',
   deleteBulkDocumentsTitle: '删除全部文档',
   deleteBulkDocumentsMessage: '你确定要从这个项目中删除全部文档吗？',
-  pageText: '{0}-{1} of {2}'
+  pageText: '{0}-{1} 共 {2}'
 }

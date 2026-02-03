@@ -10,11 +10,13 @@ export default {
   upload: '上传',
   add: '增加',
   delete: '删除',
+  update: '更新',
   deleteAll: '全部删除',
   search: '搜索',
   name: '名称',
   import: '导入',
   export: '导出',
+  clone: '克隆',
   description: '描述',
   type: '类型',
   loading: '加载中... 请等待'
