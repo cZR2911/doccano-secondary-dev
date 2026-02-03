@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Type
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
 from .exceptions import FileFormatException
@@ -208,17 +208,17 @@ class AudioFile(Format):
 
 class ArgColumn(BaseModel):
     encoding: encodings = "utf_8"
-    column_data: str = "text"
-    column_label: str = "label"
+    column_data: str = Field("text", title="Text Column", description="The column name that contains the text.")
+    column_label: str = Field("label", title="Label Column", description="The column name that contains the label.")
 
 
 class ArgDelimiter(ArgColumn):
     encoding: encodings = "utf_8"
-    delimiter: Literal[",", "\t", ";", "|", " "] = ","
+    delimiter: Literal[",", "\t", ";", "|", " "] = Field(",", title="Delimiter")
 
 
 class ArgEncoding(BaseModel):
-    encoding: encodings = "utf_8"
+    encoding: encodings = Field("utf_8", title="Encoding")
 
 
 class ArgCoNLL(BaseModel):

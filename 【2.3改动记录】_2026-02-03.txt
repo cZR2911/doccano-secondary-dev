@@ -24,3 +24,10 @@
 4. **文档更新**
    - **改动记录生成**：
      - 生成了本次改动记录文件 `【2.3改动记录】_2026-02-03.txt`，详细归档了开发内容。
+
+5. **功能增强 (Feature Enhancement)**
+   - **Excel 导入体验优化**：
+     - **后端 Schema 改进**：在 `backend/data_import/pipeline/catalog.py` 中为 Excel 导入参数（`ArgColumn`）添加了描述性标题（Text Column, Label Column）。
+     - **前端列名映射 UI 优化**：改进了 `import.vue`，现在可以正确显示并翻译“Excel 列名 (文本)”和“Excel 列名 (标签)”输入框。
+     - **汉化支持**：在 `dataset.js` 中添加了列名映射相关的中文翻译。
+     - **解决问题**：解决了用户在导入 Excel 时因默认列名不明确导致“只能标注第一列”的困惑，现在用户可以直观地指定包含文本内容的列名。

@@ -20,7 +20,7 @@
           v-for="(item, key) in textFields"
           :key="key"
           v-model="option[key]"
-          :label="item.title"
+          :label="$te('dataset.' + key) ? $t('dataset.' + key) : item.title"
           :rules="requiredRules"
           outlined
         />
@@ -29,7 +29,7 @@
           :key="key"
           v-model="option[key]"
           :items="val.enum"
-          :label="val.title"
+          :label="$te('dataset.' + key) ? $t('dataset.' + key) : val.title"
           outlined
         >
           <template #selection="{ item }">
