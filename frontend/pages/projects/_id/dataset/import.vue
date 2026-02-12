@@ -351,31 +351,37 @@ export default {
           }
         }
         // Force Strategy (Simple & Crude)
-        // If text column is missing, pick the 1st one
-        if (
-          'column_data' in this.option &&
-          (!this.option.column_data || this.option.column_data.length === 0) &&
-          columns.length > 0
-        ) {
-          this.option.column_data = [columns[0]]
-        }
+        // User Requirement: Default recognize first row content (header of first column) as label
+        // So: Label = 1st Column, Text = 2nd Column (or next available)
 
-        // If label column is missing, pick the last available one
+        // 1. Force Label to 1st Column if missing
         if (
           'column_label' in this.option &&
           (!this.option.column_label || this.option.column_label.length === 0) &&
           columns.length > 0
         ) {
-          // Get currently selected text column (might have just been set)
-          const textCols = this.option.column_data || []
-          const textCol = textCols.length > 0 ? textCols[0] : null
+          this.option.column_label = [columns[0]]
+        }
 
-          // Find candidates (exclude text column)
-          const candidates = columns.filter((col) => col !== textCol)
+        // 2. Force Text to next available column if missing
+        if (
+          'column_data' in this.option &&
+          (!this.option.column_data || this.option.column_data.length === 0) &&
+          columns.length > 0
+        ) {
+          // Get currently selected label column
+          const labelCols = this.option.column_label || []
+          const labelCol = labelCols.length > 0 ? labelCols[0] : null
+
+          // Find candidates (exclude label column)
+          const candidates = columns.filter((col) => col !== labelCol)
 
           if (candidates.length > 0) {
-            // Pick the last one
-            this.option.column_label = [candidates[candidates.length - 1]]
+            // Pick the first available candidate (effectively the 2nd column if label was 1st)
+            this.option.column_data = [candidates[0]]
+          } else if (!labelCol) {
+             // If for some reason we have no label and no candidates (shouldn't happen given logic above), fallback
+             this.option.column_data = [columns[0]]
           }
         }
       } catch (e) {

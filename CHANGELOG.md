@@ -15,6 +15,10 @@
         - Renamed `Edit` button to `编辑`.
         - **Vertical Spacing**: Increased vertical margin between `编辑` (Edit) and `标注` (Annotate) buttons for better clickability (added `mb-4` class).
 
+### Fixes
+- **Import Logic**: Adjusted the "Force Strategy" for column recognition based on user feedback.
+    - **Logic Change**: If no column matches known aliases, default the **First Column** as the **Label** and the **Second Column** as the **Text** (previously Label=Last, Text=First).
+
 ## [2.11] - 2026-02-11
 
 ### Added
