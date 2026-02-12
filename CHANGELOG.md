@@ -2,15 +2,16 @@
 
 ## [2.12] - 2026-02-12
 
-### Import Logic Correction
-- **Default Column Selection**: 
-    - **Text Column**: Defaults to the **First Column** (Index 0) if no specific alias is found.
+### Import Logic Correction (Remote Sync & Local Fixes)
+- **Column Recognition Strategy**:
+    - **Text Column**: Defaults to the **First Column** (Index 0).
     - **Label Columns**: Defaults to **All Other Columns** (Index 1..N).
-    - This ensures that in multi-column files (e.g., `Text, Label1, Label2`), the first column is treated as the text content, and all subsequent columns are treated as potential labels.
+    - **Behavior Change**: Previously, the system might have defaulted to the last column for labels or required manual selection. Now, for a file with structure `[Text, Tag1, Tag2, Tag3]`, it automatically selects `Text` as the content and `Tag1, Tag2, Tag3` as labels.
 
-### Sync & Merge
-- **Codebase Sync**: Successfully synchronized with the remote repository, incorporating backend updates (Roles & Projects modules) from the team.
-- **Conflict Resolution**: Merged local UI enhancements with remote backend changes.
+### Features (Synced from Remote)
+- **Auto-Label Creation (Backend)**: 
+    - **Binary/Indicator Columns**: Implemented logic to handle columns containing binary values (0/1, True/False).
+    - **Automatic Tagging**: When such columns are imported, the system now automatically creates a label using the **Header Name** for any row marked as True/1. This allows for importing datasets with pre-existing multi-label annotations without manual label creation.
 
 ### UI/UX Improvements (Localization & Layout)
 - **Document List**:
@@ -21,6 +22,6 @@
         - Renamed `Edit` button to `编辑`.
         - **Vertical Spacing**: Increased vertical margin between `编辑` (Edit) and `标注` (Annotate) buttons for better clickability (added `mb-4` class).
 
-### Features
-- **Auto-Label Creation (Import)**: Implemented automatic label creation from binary/indicator columns.
-    - If a user imports a column (e.g., "Sports") containing only binary values (0/1, True/False), the system now automatically creates a label named "Sports" for rows marked as True.
+### Sync & Merge
+- **Codebase Sync**: Successfully synchronized with the remote repository (commits `d9faf29c`, `d6239dc1`), incorporating backend updates for automatic label creation and improved import defaults.
+- **Conflict Resolution**: Merged local UI enhancements with remote backend changes.
