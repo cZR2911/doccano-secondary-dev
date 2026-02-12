@@ -7,7 +7,7 @@ from .models import Member
 class RolePermission(BasePermission):
     UNSAFE_METHODS = ("POST", "PATCH", "DELETE")
     unsafe_methods_check = True
-    role_name = ""
+    feature_name = ""
 
     @classmethod
     def get_project_id(cls, request, view):
@@ -24,30 +24,30 @@ class RolePermission(BasePermission):
         if not project_id and request.method in SAFE_METHODS:
             return True
 
-        return Member.objects.has_role(project_id, request.user, self.role_name)
+        return Member.objects.has_feature(project_id, request.user, self.feature_name)
 
 
 class IsProjectAdmin(RolePermission):
     unsafe_methods_check = False
-    role_name = settings.ROLE_PROJECT_ADMIN
+    feature_name = "is_project_admin"
 
 
 class IsAnnotatorAndReadOnly(RolePermission):
-    role_name = settings.ROLE_ANNOTATOR
+    feature_name = "is_annotator"
 
 
 class IsAnnotator(RolePermission):
     unsafe_methods_check = False
-    role_name = settings.ROLE_ANNOTATOR
+    feature_name = "is_annotator"
 
 
 class IsAnnotationApproverAndReadOnly(RolePermission):
-    role_name = settings.ROLE_ANNOTATION_APPROVER
+    feature_name = "is_annotation_approver"
 
 
 class IsAnnotationApprover(RolePermission):
     unsafe_methods_check = False
-    role_name = settings.ROLE_ANNOTATION_APPROVER
+    feature_name = "is_annotation_approver"
 
 
 IsProjectMember = IsAnnotator | IsAnnotationApprover | IsProjectAdmin  # type: ignore

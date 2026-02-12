@@ -206,6 +206,9 @@ class MemberManager(Manager):
     def has_role(self, project_id: int, user: User, role_name: str):
         return self.filter(project=project_id, user=user, role__name=role_name).exists()
 
+    def has_feature(self, project_id: int, user: User, feature_name: str):
+        return self.filter(project=project_id, user=user, role__features__name=feature_name).exists()
+
 
 class Member(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="role_mappings")
@@ -222,7 +225,7 @@ class Member(models.Model):
             raise ValidationError(message)
 
     def is_admin(self):
-        return self.role.name == settings.ROLE_PROJECT_ADMIN
+        return self.role.features.filter(name="is_project_admin").exists()
 
     @property
     def username(self):

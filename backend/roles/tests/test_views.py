@@ -11,7 +11,7 @@ class TestRoleAPI(CRUDMixin):
     def setUpTestData(cls):
         create_default_roles()
         cls.user = make_user()
-        cls.url = reverse(viewname="roles")
+        cls.url = reverse(viewname="role-list")
 
     def test_allows_authenticated_user_to_get_roles(self):
         self.assert_fetch(self.user, status.HTTP_200_OK)

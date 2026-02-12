@@ -23,6 +23,7 @@ from .models import (
 class MemberSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
     rolename = serializers.SerializerMethodField()
+    features = serializers.SerializerMethodField()
 
     @classmethod
     def get_username(cls, instance):
@@ -34,9 +35,14 @@ class MemberSerializer(serializers.ModelSerializer):
         role = instance.role
         return role.name if role else None
 
+    @classmethod
+    def get_features(cls, instance):
+        role = instance.role
+        return [feature.name for feature in role.features.all()] if role else []
+
     class Meta:
         model = Member
-        fields = ("id", "user", "role", "username", "rolename")
+        fields = ("id", "user", "role", "username", "rolename", "features")
 
 
 class TagSerializer(serializers.ModelSerializer):
