@@ -281,18 +281,50 @@ class LabelMaker:
         col_map = {str(c).strip(): c for c in df.columns}
         
         labels = []
+        
+        # Generic names that imply the VALUE is the label
+        GENERIC_LABEL_NAMES = {
+            'label', 'tag', 'category', 'class', 'target', 'sentiment', 'emotion', 
+            'topic', 'intent', '标签', '类别', '分类', '目标'
+        }
+        
         for col_name in column_list:
             if col_name not in col_map:
                 continue
             
             actual_col = col_map[col_name]
+            
+            # Analyze column content to decide strategy (Header as Label vs Value as Label)
+            # Only applies to CategoryLabel (Text Classification)
+            is_indicator = False
+            if self.label_class.__name__ == 'CategoryLabel':
+                # If column name looks like a generic label container, assume values are labels
+                if col_name.lower() not in GENERIC_LABEL_NAMES:
+                     # Check values
+                     series = df[actual_col].dropna()
+                     unique_vals = set(series.unique())
+                     # Check if values are subset of boolean indicators
+                     # We treat 0, 1, "0", "1", True, False, "True", "False" as indicators
+                     indicators = {0, 1, '0', '1', True, False, 'True', 'False', 'true', 'false', 0.0, 1.0}
+                     if unique_vals.issubset(indicators):
+                         is_indicator = True
+
             df_label = df.explode(actual_col)
             df_label = df_label[[UUID_COLUMN, actual_col]]
             df_label.dropna(subset=[actual_col], inplace=True)
             for row in df_label.to_dict(orient="records"):
                 try:
-                    label = self.label_class.parse(row[UUID_COLUMN], row[actual_col])
-                    labels.append(label)
+                    val = row[actual_col]
+                    if is_indicator:
+                        # Check truthiness for binary indicator
+                        str_val = str(val).lower()
+                        if str_val in ('1', '1.0', 'true', 'yes'):
+                            # Use the HEADER (column name) as the label
+                            label = self.label_class.parse(row[UUID_COLUMN], col_name)
+                            labels.append(label)
+                    else:
+                        label = self.label_class.parse(row[UUID_COLUMN], row[actual_col])
+                        labels.append(label)
                 except ValueError:
                     pass
         return labels

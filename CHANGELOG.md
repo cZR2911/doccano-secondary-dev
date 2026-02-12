@@ -15,6 +15,11 @@
         - Renamed `Edit` button to `编辑`.
         - **Vertical Spacing**: Increased vertical margin between `编辑` (Edit) and `标注` (Annotate) buttons for better clickability (added `mb-4` class).
 
+### Features
+- **Auto-Label Creation (Import)**: Implemented automatic label creation from binary/indicator columns.
+    - If a user imports a column (e.g., "Sports") containing only binary values (0/1, True/False), the system now automatically creates a label named "Sports" for rows marked as True.
+    - This allows skipping manual label creation for One-Hot encoded datasets.
+
 ### Fixes
 - **Import Logic**: Adjusted the "Force Strategy" for column recognition based on user feedback.
     - **Logic Change**: If no column matches known aliases, default the **First Column** as the **Label** and the **Second Column** as the **Text** (previously Label=Last, Text=First).
