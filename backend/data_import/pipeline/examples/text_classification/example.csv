@@ -1,4 +1,4 @@
-column_data,column_label
-"Terrible customer service.","negative"
-"Really great transaction.","positive"
-"Great price.","positive"
+text,label
+"糟糕的客户服务。","消极"
+"非常棒的交易。","积极"
+"价格很棒。","积极"

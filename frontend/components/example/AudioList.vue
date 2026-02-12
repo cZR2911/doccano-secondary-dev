@@ -23,7 +23,7 @@
       <v-text-field
         v-model="search"
         :prepend-inner-icon="mdiMagnify"
-        :label="$t('generic.search') + ' (e.g. label:positive)'"
+        :label="$t('generic.search') + $t('generic.searchPlaceholder')"
         single-line
         hide-details
         filled

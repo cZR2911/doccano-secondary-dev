@@ -1,14 +1,14 @@
 [
     {
-        "column_data": "Terrible customer service.",
-        "column_label": ["negative"]
+        "text": "糟糕的客户服务。",
+        "label": ["消极"]
     },
     {
-        "column_data": "Really great transaction.",
-        "column_label": ["positive"]
+        "text": "非常棒的交易。",
+        "label": ["积极"]
     },
     {
-        "column_data": "Great price.",
-        "column_label": ["positive"]
+        "text": "价格很棒。",
+        "label": ["积极"]
     }
 ]

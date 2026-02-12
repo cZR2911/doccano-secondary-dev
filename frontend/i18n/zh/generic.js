@@ -21,5 +21,6 @@ export default {
   type: '类型',
   loading: '加载中... 请等待',
   preview: '预览',
-  saveAndAddAnother: '保存并添加另一个'
+  saveAndAddAnother: '保存并添加另一个',
+  searchPlaceholder: ' (例如: label:positive)'
 }

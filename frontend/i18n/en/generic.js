@@ -19,5 +19,6 @@ export default {
   type: 'Type',
   loading: 'Loading... Please wait',
   preview: 'Preview',
-  saveAndAddAnother: 'Save and add another'
+  saveAndAddAnother: 'Save and add another',
+  searchPlaceholder: ' (e.g. label:positive)'
 }
