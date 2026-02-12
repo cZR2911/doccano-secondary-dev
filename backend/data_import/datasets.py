@@ -78,6 +78,16 @@ class DatasetWithSingleLabelType(Dataset):
             examples = Examples(self.example_maker.make(records))
             examples.save()
 
+            # Update LabelMaker with the resolved text column name from ExampleMaker
+            # This allows LabelMaker to find the text content for auto-span detection
+            self.label_maker.text_column = self.example_maker.column_data
+
+            # Ensure label types from columns are created (even if no labels are made)
+            if hasattr(self.label_maker, 'get_label_columns'):
+                 label_cols = self.label_maker.get_label_columns(records)
+                 types_to_create = [self.label_type(text=col, project=self.project) for col in label_cols]
+                 self.types.save(types_to_create)
+
             # create label types
             labels = self.labels_class(self.label_maker.make(records), self.types)
             labels.clean(self.project)
@@ -129,6 +139,16 @@ class SequenceLabelingDataset(DatasetWithSingleLabelType):
             # create examples
             examples = Examples(self.example_maker.make(records))
             examples.save()
+
+            # Update LabelMaker with the resolved text column name from ExampleMaker
+            # This allows LabelMaker to find the text content for auto-span detection
+            self.label_maker.text_column = self.example_maker.column_data
+
+            # Ensure label types from columns are created (even if no labels are made)
+            if hasattr(self.label_maker, 'get_label_columns'):
+                 label_cols = self.label_maker.get_label_columns(records)
+                 types_to_create = [self.label_type(text=col, project=self.project) for col in label_cols]
+                 self.types.save(types_to_create)
 
             # create label types
             labels = self.labels_class(self.label_maker.make(records), self.types)

@@ -4,14 +4,17 @@
 
 ### Import Logic Correction (Remote Sync & Local Fixes)
 - **Column Recognition Strategy**:
-    - **Text Column**: Defaults to the **First Column** (Index 0).
-    - **Label Columns**: Defaults to **All Other Columns** (Index 1..N).
-    - **Behavior Change**: Previously, the system might have defaulted to the last column for labels or required manual selection. Now, for a file with structure `[Text, Tag1, Tag2, Tag3]`, it automatically selects `Text` as the content and `Tag1, Tag2, Tag3` as labels.
+    - **Default Behavior**: Selects **ALL Columns** as **Label Columns** (Headers = Label Types).
+    - **Text Column**: Selects **ALL Columns** as **Text Columns** (Rows = Text Content).
+    - **Rationale**: Supports users who want to import a file where the header row defines the label set, and all subsequent rows contain text data that needs to be annotated with those labels.
 
 ### Features (Synced from Remote)
 - **Auto-Label Creation (Backend)**: 
     - **Binary/Indicator Columns**: Implemented logic to handle columns containing binary values (0/1, True/False).
     - **Automatic Tagging**: When such columns are imported, the system now automatically creates a label using the **Header Name** for any row marked as True/1. This allows for importing datasets with pre-existing multi-label annotations without manual label creation.
+    - **Column Headers as Label Types (Sequence Labeling)**:
+        - **Logic**: For Sequence Labeling projects, selecting columns as "Label" will now automatically add the **Column Headers** as available **Label Types** in the project.
+        - **Behavior**: No automatic span annotations are created on the text. This allows users to quickly import a list of desired labels defined in the file header without pre-annotating the data.
 
 ### UI/UX Improvements (Localization & Layout)
 - **Document List**:

@@ -264,10 +264,27 @@ class BinaryExampleMaker(ExampleMaker):
 
 
 class LabelMaker:
-    def __init__(self, column: str, label_class: Type[Label]):
+    def __init__(self, column: str, label_class: Type[Label], text_column: Optional[str] = None):
         self.column = column
         self.label_class = label_class
+        self.text_column = text_column
         self._errors: List[FileParseException] = []
+
+    def get_label_columns(self, df: pd.DataFrame) -> List[str]:
+        if not self.check_column_existence(df):
+            return []
+
+        raw_columns = self.column.replace('，', ',')
+        column_list = [c.strip() for c in raw_columns.split(',')]
+        col_map = {str(c).strip(): c for c in df.columns}
+
+        valid_cols = []
+        for col_name in column_list:
+            if col_name in col_map:
+                if self.text_column and col_name == self.text_column:
+                    continue
+                valid_cols.append(col_name)
+        return valid_cols
 
     def make(self, df: pd.DataFrame) -> List[Label]:
         if not self.check_column_existence(df):
@@ -292,33 +309,61 @@ class LabelMaker:
             if col_name not in col_map:
                 continue
             
+            # Avoid processing the text column as a label
+            if self.text_column and col_name == self.text_column:
+                continue
+            
             actual_col = col_map[col_name]
             
             # Analyze column content to decide strategy (Header as Label vs Value as Label)
             # Only applies to CategoryLabel (Text Classification)
             is_indicator = False
             if self.label_class.__name__ == 'CategoryLabel':
-                # If column name looks like a generic label container, assume values are labels
-                if col_name.lower() not in GENERIC_LABEL_NAMES:
-                     # Check values
-                     series = df[actual_col].dropna()
-                     unique_vals = set(series.unique())
-                     # Check if values are subset of boolean indicators
-                     # We treat 0, 1, "0", "1", True, False, "True", "False" as indicators
-                     indicators = {0, 1, '0', '1', True, False, 'True', 'False', 'true', 'false', 0.0, 1.0}
-                     if unique_vals.issubset(indicators):
+                # Force Header-as-Label strategy if multiple columns are selected
+                # UNLESS the column name specifically suggests it contains label values (e.g. "Label", "Category")
+                if len(column_list) > 1:
+                     if col_name.lower() not in GENERIC_LABEL_NAMES:
                          is_indicator = True
+                
+                # If still not decided, fallback to value check
+                if not is_indicator:
+                    # If column name looks like a generic label container, assume values are labels
+                    if col_name.lower() not in GENERIC_LABEL_NAMES:
+                         # Check values
+                         series = df[actual_col].dropna()
+                         unique_vals = set(series.unique())
+                         # Check if values are subset of boolean indicators
+                         # We treat 0, 1, "0", "1", True, False, "True", "False" as indicators
+                         indicators = {0, 1, '0', '1', True, False, 'True', 'False', 'true', 'false', 0.0, 1.0}
+                         if unique_vals.issubset(indicators):
+                             is_indicator = True
 
             df_label = df.explode(actual_col)
-            df_label = df_label[[UUID_COLUMN, actual_col]]
+            columns_to_keep = [UUID_COLUMN, actual_col]
+            if self.text_column and self.text_column in df.columns:
+                columns_to_keep.append(self.text_column)
+            
+            df_label = df_label[columns_to_keep]
             df_label.dropna(subset=[actual_col], inplace=True)
             for row in df_label.to_dict(orient="records"):
                 try:
                     val = row[actual_col]
                     if is_indicator:
-                        # Check truthiness for binary indicator
+                        # Check truthiness for binary indicator or non-empty string
                         str_val = str(val).lower()
+                        # Extended truthiness check:
+                        # 1. Binary indicators: 1, true, yes
+                        # 2. Non-empty content (if we are in multi-column header-as-label mode)
+                        # We need to be careful not to treat "0" or "False" as True.
+                        
+                        is_true = False
                         if str_val in ('1', '1.0', 'true', 'yes'):
+                            is_true = True
+                        elif len(column_list) > 1 and str_val not in ('0', '0.0', 'false', 'no', 'nan', 'none', ''):
+                            # In multi-column mode, treat any non-negative/non-empty value as True
+                            is_true = True
+                            
+                        if is_true:
                             # Use the HEADER (column name) as the label
                             label = self.label_class.parse(row[UUID_COLUMN], col_name)
                             labels.append(label)
