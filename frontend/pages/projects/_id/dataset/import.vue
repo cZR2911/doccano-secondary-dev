@@ -351,9 +351,10 @@ export default {
           }
         }
         // Force Strategy (Smart Defaults)
-        // User Requirement: "Default recognize first row content as label"
-        // Interpretation: Default 1st column as Label, 2nd column as Text (if no aliases match).
-        // Also: Select ALL non-text columns as Labels to support multi-label/indicators.
+        // User Requirement: "First row's every column is a different label"
+        // & "Future rows are each text"
+        // Interpretation: Select ALL columns as Label (Headers = Labels)
+        // AND Select ALL columns as Text (Rows = Text).
 
         // 1. Force Text (column_data) if missing
         if (
@@ -361,17 +362,8 @@ export default {
           (!this.option.column_data || this.option.column_data.length === 0) &&
           columns.length > 0
         ) {
-          // If a label is already selected (via alias), pick the first available non-label column
-          const labelCols = this.option.column_label || []
-          const available = columns.filter((col) => !labelCols.includes(col))
-
-          if (available.length > 0) {
-            // Default to the first available column as Text
-            this.option.column_data = [available[0]]
-          } else {
-             // Fallback if everything is claimed by label
-             this.option.column_data = [columns[0]]
-          }
+           // Default to ALL columns as Text (merged)
+           this.option.column_data = columns
         }
 
         // 2. Force Label (column_label) if missing
@@ -380,20 +372,8 @@ export default {
           (!this.option.column_label || this.option.column_label.length === 0) &&
           columns.length > 0
         ) {
-          const textCols = this.option.column_data || []
-          const textCol = textCols.length > 0 ? textCols[0] : null
-
-          // Select ALL columns that are NOT the text column
-          // This ensures headers like "Politics", "Sports" are all selected by default
-          const candidates = columns.filter((col) => col !== textCol)
-
-          if (candidates.length > 0) {
-            this.option.column_label = candidates
-          } else {
-            // Fallback: if only 1 column exists and it's text, use it as label too?
-            // Or just default to 1st column
-            this.option.column_label = [columns[0]]
-          }
+          // Default to ALL columns as Label (Headers are labels)
+          this.option.column_label = columns
         }
       } catch (e) {
         console.error(e)
