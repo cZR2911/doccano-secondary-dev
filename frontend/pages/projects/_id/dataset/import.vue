@@ -366,15 +366,10 @@ export default {
           const available = columns.filter((col) => !labelCols.includes(col))
 
           if (available.length > 0) {
-            // If label is NOT selected yet, prefer the 2nd column (index 1) as Text
-            // This leaves the 1st column (index 0) for the Label (User preference)
-            if (labelCols.length === 0 && available.length > 1) {
-              this.option.column_data = [available[1]]
-            } else {
-              this.option.column_data = [available[0]]
-            }
+            // Default to the first available column as Text
+            this.option.column_data = [available[0]]
           } else {
-             // Fallback if everything is claimed by label (unlikely due to alias logic)
+             // Fallback if everything is claimed by label
              this.option.column_data = [columns[0]]
           }
         }

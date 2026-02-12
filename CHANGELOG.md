@@ -2,6 +2,12 @@
 
 ## [2.12] - 2026-02-12
 
+### Import Logic Correction
+- **Default Column Selection**: 
+    - **Text Column**: Defaults to the **First Column** (Index 0) if no specific alias is found.
+    - **Label Columns**: Defaults to **All Other Columns** (Index 1..N).
+    - This ensures that in multi-column files (e.g., `Text, Label1, Label2`), the first column is treated as the text content, and all subsequent columns are treated as potential labels.
+
 ### Sync & Merge
 - **Codebase Sync**: Successfully synchronized with the remote repository, incorporating backend updates (Roles & Projects modules) from the team.
 - **Conflict Resolution**: Merged local UI enhancements with remote backend changes.
@@ -18,22 +24,3 @@
 ### Features
 - **Auto-Label Creation (Import)**: Implemented automatic label creation from binary/indicator columns.
     - If a user imports a column (e.g., "Sports") containing only binary values (0/1, True/False), the system now automatically creates a label named "Sports" for rows marked as True.
-    - This allows skipping manual label creation for One-Hot encoded datasets.
-
-### Fixes
-- **Import Logic**: Adjusted the "Force Strategy" for column recognition based on user feedback.
-    - **Logic Change**: If no column matches known aliases, default the **First Column** as the **Label** and the **Second Column** as the **Text** (previously Label=Last, Text=First).
-    - **Smart Selection**: If multiple potential label columns exist (e.g., One-Hot encoded headers), the system now defaults to selecting **ALL** non-text columns as Label columns. This allows users to simply deselect unwanted columns instead of selecting each label column manually.
-
-## [2.11] - 2026-02-11
-
-### Added
-- **Frontend (Import)**: Implemented automatic recognition of file headers as labels during dataset import.
-    - Added alias matching for label columns (e.g., `label`, `tag`, `category`, `class`, `target`, `sentiment`, `intent`).
-    - Added alias matching for text columns (e.g., `text`, `data`, `body`, `content`, `question`, `answer`, `review`).
-    - Added partial string matching for column names.
-    - Added "Force Strategy": Default to 1st column as Text and last column as Label if no match found.
-- **Backend (Import)**: Synced column alias logic in `LabelMaker` to match frontend capabilities.
-
-### Changed
-- **Frontend (DocumentList)**: Increased vertical spacing between "Edit" and "Annotate" buttons for better usability.
