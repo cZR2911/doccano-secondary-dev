@@ -350,38 +350,54 @@ export default {
             }
           }
         }
-        // Force Strategy (Simple & Crude)
-        // User Requirement: Default recognize first row content (header of first column) as label
-        // So: Label = 1st Column, Text = 2nd Column (or next available)
+        // Force Strategy (Smart Defaults)
+        // User Requirement: "Default recognize first row content as label"
+        // Interpretation: Default 1st column as Label, 2nd column as Text (if no aliases match).
+        // Also: Select ALL non-text columns as Labels to support multi-label/indicators.
 
-        // 1. Force Label to 1st Column if missing
-        if (
-          'column_label' in this.option &&
-          (!this.option.column_label || this.option.column_label.length === 0) &&
-          columns.length > 0
-        ) {
-          this.option.column_label = [columns[0]]
-        }
-
-        // 2. Force Text to next available column if missing
+        // 1. Force Text (column_data) if missing
         if (
           'column_data' in this.option &&
           (!this.option.column_data || this.option.column_data.length === 0) &&
           columns.length > 0
         ) {
-          // Get currently selected label column
+          // If a label is already selected (via alias), pick the first available non-label column
           const labelCols = this.option.column_label || []
-          const labelCol = labelCols.length > 0 ? labelCols[0] : null
+          const available = columns.filter((col) => !labelCols.includes(col))
 
-          // Find candidates (exclude label column)
-          const candidates = columns.filter((col) => col !== labelCol)
+          if (available.length > 0) {
+            // If label is NOT selected yet, prefer the 2nd column (index 1) as Text
+            // This leaves the 1st column (index 0) for the Label (User preference)
+            if (labelCols.length === 0 && available.length > 1) {
+              this.option.column_data = [available[1]]
+            } else {
+              this.option.column_data = [available[0]]
+            }
+          } else {
+             // Fallback if everything is claimed by label (unlikely due to alias logic)
+             this.option.column_data = [columns[0]]
+          }
+        }
+
+        // 2. Force Label (column_label) if missing
+        if (
+          'column_label' in this.option &&
+          (!this.option.column_label || this.option.column_label.length === 0) &&
+          columns.length > 0
+        ) {
+          const textCols = this.option.column_data || []
+          const textCol = textCols.length > 0 ? textCols[0] : null
+
+          // Select ALL columns that are NOT the text column
+          // This ensures headers like "Politics", "Sports" are all selected by default
+          const candidates = columns.filter((col) => col !== textCol)
 
           if (candidates.length > 0) {
-            // Pick the first available candidate (effectively the 2nd column if label was 1st)
-            this.option.column_data = [candidates[0]]
-          } else if (!labelCol) {
-             // If for some reason we have no label and no candidates (shouldn't happen given logic above), fallback
-             this.option.column_data = [columns[0]]
+            this.option.column_label = candidates
+          } else {
+            // Fallback: if only 1 column exists and it's text, use it as label too?
+            // Or just default to 1st column
+            this.option.column_label = [columns[0]]
           }
         }
       } catch (e) {

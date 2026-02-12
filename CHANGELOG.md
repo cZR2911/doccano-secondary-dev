@@ -23,6 +23,7 @@
 ### Fixes
 - **Import Logic**: Adjusted the "Force Strategy" for column recognition based on user feedback.
     - **Logic Change**: If no column matches known aliases, default the **First Column** as the **Label** and the **Second Column** as the **Text** (previously Label=Last, Text=First).
+    - **Smart Selection**: If multiple potential label columns exist (e.g., One-Hot encoded headers), the system now defaults to selecting **ALL** non-text columns as Label columns. This allows users to simply deselect unwanted columns instead of selecting each label column manually.
 
 ## [2.11] - 2026-02-11
 
