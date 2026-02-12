@@ -77,7 +77,7 @@ class ExampleSerializer(serializers.ModelSerializer):
             # Ensure meta is a dict (it might be None if not passed, though instance.meta defaults to dict)
             if meta is None:
                 meta = {}
-            
+
             if "original_text" not in meta:
                 # Use strict copy to avoid reference issues, though simple dict assignment is usually fine here
                 meta = dict(meta)

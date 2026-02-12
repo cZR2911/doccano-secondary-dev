@@ -34,7 +34,8 @@ export class ProjectApplicationService {
       const query = new SearchQuery(q.limit, q.offset, q.q, q.sortBy, q.sortDesc)
       return await this.repository.list(query)
     } catch (e: any) {
-      const message = e.response?.data?.detail || e.message || 'Unknown error occurred while fetching projects'
+      const message =
+        e.response?.data?.detail || e.message || 'Unknown error occurred while fetching projects'
       throw new Error(message)
     }
   }
@@ -75,7 +76,8 @@ export class ProjectApplicationService {
     try {
       return await this.repository.create(project)
     } catch (e: any) {
-      const message = e.response?.data?.detail || e.message || 'Unknown error occurred during project creation'
+      const message =
+        e.response?.data?.detail || e.message || 'Unknown error occurred during project creation'
       throw new Error(message)
     }
   }
@@ -115,7 +117,8 @@ export class ProjectApplicationService {
     try {
       await this.repository.update(project)
     } catch (e: any) {
-      const message = e.response?.data?.detail || e.message || 'Unknown error occurred while updating project'
+      const message =
+        e.response?.data?.detail || e.message || 'Unknown error occurred while updating project'
       throw new Error(message)
     }
   }
@@ -129,7 +132,8 @@ export class ProjectApplicationService {
     try {
       return await this.repository.clone(project)
     } catch (e: any) {
-      const message = e.response?.data?.detail || e.message || 'Unknown error occurred while cloning project'
+      const message =
+        e.response?.data?.detail || e.message || 'Unknown error occurred while cloning project'
       throw new Error(message)
     }
   }

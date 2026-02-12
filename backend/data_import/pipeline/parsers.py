@@ -236,7 +236,7 @@ class ExcelParser(Parser):
             parts = filename.upload_name.split(".")
             if len(parts) > 1:
                 file_type = parts[-1]
-        
+
         # Fallback to generated_name if needed
         if not file_type and filename.generated_name:
             parts = filename.generated_name.split(".")
@@ -246,7 +246,7 @@ class ExcelParser(Parser):
         try:
             if file_type:
                 # Use file_stream to avoid pyexcel checking filename extension
-                with open(filename.full_path, 'rb') as f:
+                with open(filename.full_path, "rb") as f:
                     rows = pyexcel.iget_records(file_stream=f, file_type=file_type)
                     for line_num, row in enumerate(rows, start=1):
                         yield {LINE_NUMBER_COLUMN: line_num, **row}

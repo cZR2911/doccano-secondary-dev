@@ -68,13 +68,9 @@
     </template>
     <template #[`item.action`]="{ item }">
       <div class="d-flex flex-column">
-        <v-btn
-          class="mb-4"
-          small
-          color="primary text-capitalize"
-          @click="$emit('edit', item)"
-          >{{ $t('generic.edit') }}</v-btn
-        >
+        <v-btn class="mb-4" small color="primary text-capitalize" @click="$emit('edit', item)">{{
+          $t('generic.edit')
+        }}</v-btn>
         <v-btn small color="primary text-capitalize" @click="toLabeling(item)">
           {{ $t('dataset.annotate') }}
         </v-btn>

@@ -7,24 +7,48 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0008_project_allow_member_to_create_label_type_and_more'),
+        ("projects", "0008_project_allow_member_to_create_label_type_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='KnowledgeCorrectionProject',
+            name="KnowledgeCorrectionProject",
             fields=[
-                ('sequencelabelingproject_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='projects.sequencelabelingproject')),
+                (
+                    "sequencelabelingproject_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="projects.sequencelabelingproject",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
-                'base_manager_name': 'objects',
+                "abstract": False,
+                "base_manager_name": "objects",
             },
-            bases=('projects.sequencelabelingproject',),
+            bases=("projects.sequencelabelingproject",),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='project_type',
-            field=models.CharField(choices=[('DocumentClassification', 'Document Classification'), ('SequenceLabeling', 'Sequence Labeling'), ('Seq2seq', 'Seq2Seq'), ('IntentDetectionAndSlotFilling', 'Intent Detection And Slot Filling'), ('Speech2text', 'Speech2Text'), ('ImageClassification', 'Image Classification'), ('BoundingBox', 'Bounding Box'), ('Segmentation', 'Segmentation'), ('ImageCaptioning', 'Image Captioning'), ('KnowledgeCorrection', 'Knowledge Correction')], max_length=30),
+            model_name="project",
+            name="project_type",
+            field=models.CharField(
+                choices=[
+                    ("DocumentClassification", "Document Classification"),
+                    ("SequenceLabeling", "Sequence Labeling"),
+                    ("Seq2seq", "Seq2Seq"),
+                    ("IntentDetectionAndSlotFilling", "Intent Detection And Slot Filling"),
+                    ("Speech2text", "Speech2Text"),
+                    ("ImageClassification", "Image Classification"),
+                    ("BoundingBox", "Bounding Box"),
+                    ("Segmentation", "Segmentation"),
+                    ("ImageCaptioning", "Image Captioning"),
+                    ("KnowledgeCorrection", "Knowledge Correction"),
+                ],
+                max_length=30,
+            ),
         ),
     ]

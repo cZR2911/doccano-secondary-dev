@@ -1,11 +1,5 @@
 <template>
-  <base-card
-    :disabled="!valid"
-    :agree-text="$t('user.login')"
-    contained
-    block
-    @agree="tryLogin"
-  >
+  <base-card :disabled="!valid" :agree-text="$t('user.login')" contained block @agree="tryLogin">
     <template #content>
       <v-form v-model="valid">
         <v-alert v-show="showError" v-model="showError" type="error" dismissible>

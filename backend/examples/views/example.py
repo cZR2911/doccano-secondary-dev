@@ -8,7 +8,11 @@ from examples.filters import ExampleFilter
 from examples.models import Example
 from examples.serializers import ExampleSerializer
 from projects.models import Member, Project
-from projects.permissions import IsProjectAdmin, IsProjectAdminOrApprover, IsProjectStaffAndReadOnly
+from projects.permissions import (
+    IsProjectAdmin,
+    IsProjectAdminOrApprover,
+    IsProjectStaffAndReadOnly,
+)
 
 
 class ExampleList(generics.ListCreateAPIView):

@@ -1,14 +1,12 @@
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
 
-from .models import (
+from .models import (  # [EXPERIMENTAL-FEATURE-START]; [EXPERIMENTAL-FEATURE-END]
     BoundingBoxProject,
     ImageCaptioningProject,
     ImageClassificationProject,
     IntentDetectionAndSlotFillingProject,
-    # [EXPERIMENTAL-FEATURE-START]
     KnowledgeCorrectionProject,
-    # [EXPERIMENTAL-FEATURE-END]
     Member,
     Project,
     SegmentationProject,
@@ -119,6 +117,8 @@ class SequenceLabelingProjectSerializer(ProjectSerializer):
 class KnowledgeCorrectionProjectSerializer(SequenceLabelingProjectSerializer):
     class Meta(SequenceLabelingProjectSerializer.Meta):
         model = KnowledgeCorrectionProject
+
+
 # [EXPERIMENTAL-FEATURE-END]
 
 

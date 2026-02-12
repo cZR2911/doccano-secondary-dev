@@ -15,10 +15,7 @@
                 {{ mdiCheckBold }}
               </v-icon>
               {{ translateTypeName(item, $t('overview.projectTypes')) }}
-              <span
-                v-if="item === 'KnowledgeCorrection'"
-                class="ml-2 grey--text text--darken-1"
-              >
+              <span v-if="item === 'KnowledgeCorrection'" class="ml-2 grey--text text--darken-1">
                 (测试)
               </span>
             </v-card-title>

@@ -130,6 +130,8 @@ class KnowledgeCorrectionProject(SequenceLabelingProject):
     @property
     def is_text_project(self) -> bool:
         return True
+
+
 # [EXPERIMENTAL-FEATURE-END]
 
 

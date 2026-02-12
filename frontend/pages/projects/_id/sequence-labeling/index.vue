@@ -96,7 +96,8 @@
                 <span class="primary--text">{{ item.correction }}</span>
               </v-list-item-title>
               <v-list-item-subtitle class="mt-1">
-                用户: {{ item.username }} | 时间: {{
+                用户: {{ item.username }} | 时间:
+                {{
                   item.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('YYYY-MM-DD HH:mm')
                 }}
               </v-list-item-subtitle>
@@ -116,29 +117,17 @@
       <!-- [EXPERIMENTAL-FEATURE-START] Edit Dialog -->
       <v-dialog v-model="dialogEdit" max-width="800px">
         <v-card>
-          <v-card-title class="headline">
-            编辑原文文本
-          </v-card-title>
+          <v-card-title class="headline"> 编辑原文文本 </v-card-title>
           <v-card-text>
             <v-alert type="warning" dense outlined class="mb-4">
               注意：修改文本可能会导致已有的“位置标注”（如实体抽取）偏移。保存后请务必检查标注准确性。
             </v-alert>
-            <v-textarea
-              v-model="editText"
-              label="文本内容"
-              auto-grow
-              outlined
-              rows="10"
-            />
+            <v-textarea v-model="editText" label="文本内容" auto-grow outlined rows="10" />
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="grey" text @click="dialogEdit = false">
-              取消
-            </v-btn>
-            <v-btn color="primary" @click="saveText">
-              保存修改
-            </v-btn>
+            <v-btn color="grey" text @click="dialogEdit = false"> 取消 </v-btn>
+            <v-btn color="primary" @click="saveText"> 保存修改 </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>

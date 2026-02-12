@@ -83,10 +83,10 @@ class DatasetWithSingleLabelType(Dataset):
             self.label_maker.text_column = self.example_maker.column_data
 
             # Ensure label types from columns are created (even if no labels are made)
-            if hasattr(self.label_maker, 'get_label_columns'):
-                 label_cols = self.label_maker.get_label_columns(records)
-                 types_to_create = [self.label_type(text=col, project=self.project) for col in label_cols]
-                 self.types.save(types_to_create)
+            if hasattr(self.label_maker, "get_label_columns"):
+                label_cols = self.label_maker.get_label_columns(records)
+                types_to_create = [self.label_type(text=col, project=self.project) for col in label_cols]
+                self.types.save(types_to_create)
 
             # create label types
             labels = self.labels_class(self.label_maker.make(records), self.types)
@@ -145,10 +145,10 @@ class SequenceLabelingDataset(DatasetWithSingleLabelType):
             self.label_maker.text_column = self.example_maker.column_data
 
             # Ensure label types from columns are created (even if no labels are made)
-            if hasattr(self.label_maker, 'get_label_columns'):
-                 label_cols = self.label_maker.get_label_columns(records)
-                 types_to_create = [self.label_type(text=col, project=self.project) for col in label_cols]
-                 self.types.save(types_to_create)
+            if hasattr(self.label_maker, "get_label_columns"):
+                label_cols = self.label_maker.get_label_columns(records)
+                types_to_create = [self.label_type(text=col, project=self.project) for col in label_cols]
+                self.types.save(types_to_create)
 
             # create label types
             labels = self.labels_class(self.label_maker.make(records), self.types)
@@ -160,9 +160,7 @@ class SequenceLabelingDataset(DatasetWithSingleLabelType):
 
             # [EXPERIMENTAL-FEATURE-START] create Comments
             comments_data = self.comment_maker.make(records)
-            comments = [
-                c.create(user, examples[c.example_uuid]) for c in comments_data if c.example_uuid in examples
-            ]
+            comments = [c.create(user, examples[c.example_uuid]) for c in comments_data if c.example_uuid in examples]
             CommentModel.objects.bulk_create(comments)
             # [EXPERIMENTAL-FEATURE-END]
 

@@ -24,9 +24,7 @@
             :items="columns"
             :label="$te('dataset.' + key) ? $t('dataset.' + key) : item.title"
             :hint="
-              $te('dataset.' + key + '_hint')
-                ? $t('dataset.' + key + '_hint')
-                : item.description
+              $te('dataset.' + key + '_hint') ? $t('dataset.' + key + '_hint') : item.description
             "
             persistent-hint
             :rules="requiredRules"
@@ -44,9 +42,7 @@
             v-model="option[key]"
             :label="$te('dataset.' + key) ? $t('dataset.' + key) : item.title"
             :hint="
-              $te('dataset.' + key + '_hint')
-                ? $t('dataset.' + key + '_hint')
-                : item.description
+              $te('dataset.' + key + '_hint') ? $t('dataset.' + key + '_hint') : item.description
             "
             persistent-hint
             :rules="requiredRules"
@@ -221,10 +217,7 @@ export default {
           if (Array.isArray(cData)) cData = cData.join(',')
           if (Array.isArray(cLabel)) cLabel = cLabel.join(',')
 
-          return item.example
-            .replaceAll(column_data, cData)
-            .replaceAll(column_label, cLabel)
-            .trim()
+          return item.example.replaceAll(column_data, cData).replaceAll(column_label, cLabel).trim()
         } else {
           return item.example.trim()
         }
@@ -362,8 +355,8 @@ export default {
           (!this.option.column_data || this.option.column_data.length === 0) &&
           columns.length > 0
         ) {
-           // Default to ALL columns as Text (merged)
-           this.option.column_data = columns
+          // Default to ALL columns as Text (merged)
+          this.option.column_data = columns
         }
 
         // 2. Force Label (column_label) if missing
