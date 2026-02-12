@@ -19,5 +19,7 @@ export default {
   clone: '克隆',
   description: '描述',
   type: '类型',
-  loading: '加载中... 请等待'
+  loading: '加载中... 请等待',
+  preview: '预览',
+  saveAndAddAnother: '保存并添加另一个'
 }

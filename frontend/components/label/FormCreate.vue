@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>Create a Label Type</v-card-title>
+    <v-card-title>{{ $t('labels.createLabel') }}</v-card-title>
     <v-card-text>
       <v-form ref="form" v-model="valid">
         <v-row>
@@ -32,7 +32,7 @@
             <v-text-field
               :value="backgroundColor"
               :rules="[rules.validColor]"
-              label="Color"
+              :label="$t('labels.color')"
               hide-details="auto"
               outlined
               required
@@ -53,7 +53,7 @@
                     <v-icon>{{ mdiReload }}</v-icon>
                   </v-chip>
                 </template>
-                <span>Random color</span>
+                <span>{{ $t('labels.randomColor') }}</span>
               </v-tooltip>
             </v-chip-group>
           </v-col>
@@ -61,7 +61,7 @@
 
         <v-row>
           <v-col>
-            <div class="title black--text mb-2">Preview</div>
+            <div class="title black--text mb-2">{{ $t('generic.preview') }}</div>
             <v-chip :color="backgroundColor" :text-color="textColor">
               {{ text }}
               <v-avatar v-if="suffixKey" right color="white" class="black--text font-weight-bold">

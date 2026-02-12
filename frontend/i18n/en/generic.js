@@ -17,5 +17,7 @@ export default {
   export: 'Export',
   description: 'Description',
   type: 'Type',
-  loading: 'Loading... Please wait'
+  loading: 'Loading... Please wait',
+  preview: 'Preview',
+  saveAndAddAnother: 'Save and add another'
 }

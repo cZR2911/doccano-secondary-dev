@@ -34,5 +34,8 @@ export default {
   column_label: 'Excel 列名 (标签)',
   column_label_hint: '指定包含标签的列名。',
   delimiter: '分隔符',
-  encoding: '编码'
+  encoding: '编码',
+  status: '状态',
+  inProgress: '待处理',
+  finished: '已处理'
 }

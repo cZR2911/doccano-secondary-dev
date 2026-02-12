@@ -31,7 +31,7 @@
     </template>
     <template #[`item.isConfirmed`]="{ item }">
       <v-chip :color="item.isConfirmed ? 'success' : 'warning'" text small>
-        {{ item.isConfirmed ? 'Finished' : 'In progress' }}
+        {{ item.isConfirmed ? $t('dataset.finished') : $t('dataset.inProgress') }}
       </v-chip>
     </template>
     <template #[`item.text`]="{ item }">
@@ -67,12 +67,18 @@
       </v-combobox>
     </template>
     <template #[`item.action`]="{ item }">
-      <v-btn class="me-1" small color="primary text-capitalize" @click="$emit('edit', item)"
-        >Edit</v-btn
-      >
-      <v-btn small color="primary text-capitalize" @click="toLabeling(item)">
-        {{ $t('dataset.annotate') }}
-      </v-btn>
+      <div class="d-flex flex-column">
+        <v-btn
+          class="mb-4"
+          small
+          color="primary text-capitalize"
+          @click="$emit('edit', item)"
+          >{{ $t('generic.edit') }}</v-btn
+        >
+        <v-btn small color="primary text-capitalize" @click="toLabeling(item)">
+          {{ $t('dataset.annotate') }}
+        </v-btn>
+      </div>
     </template>
   </v-data-table>
 </template>
@@ -130,7 +136,7 @@ export default Vue.extend({
     headers() {
       const headers = [
         {
-          text: 'Status',
+          text: this.$t('dataset.status'),
           value: 'isConfirmed',
           sortable: false
         },

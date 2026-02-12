@@ -1,7 +1,7 @@
 <template>
   <form-create v-slot="slotProps" v-bind.sync="editedItem" :items="items">
     <v-btn :disabled="!slotProps.valid" color="primary" class="text-capitalize" @click="save">
-      Save
+      {{ $t('generic.save') }}
     </v-btn>
   </form-create>
 </template>

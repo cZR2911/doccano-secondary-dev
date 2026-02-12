@@ -311,7 +311,12 @@ class LabelMaker:
         if self.column not in df.columns:
             # Try to find a fallback column from known aliases
             if self.column == DEFAULT_LABEL_COLUMN:
-                aliases = ['label', 'Label', 'LABEL', '标签', '类别', 'tag', 'Tag', 'category', 'Category']
+                aliases = [
+                    'label', 'Label', 'LABEL', '标签', '类别', 'tag', 'Tag',
+                    'category', 'Category', 'class', 'Class', 'target', 'Target',
+                    'sentiment', 'Sentiment', 'emotion', 'Emotion', 'topic', 'Topic',
+                    'intent', 'Intent', '分类', '目标'
+                ]
                 
                 # Check for exact matches first
                 for alias in aliases:

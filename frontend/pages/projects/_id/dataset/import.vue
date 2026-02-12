@@ -282,6 +282,100 @@ export default {
         for (const key in this.option) {
           if (Array.isArray(this.option[key])) {
             this.option[key] = this.option[key].filter((col) => columns.includes(col))
+            if (this.option[key].length === 0) {
+              if (key === 'column_label') {
+                const aliases = [
+                  'label',
+                  'tag',
+                  'category',
+                  'class',
+                  'target',
+                  'sentiment',
+                  'emotion',
+                  'topic',
+                  'intent',
+                  '标签',
+                  '类别',
+                  '分类',
+                  '目标'
+                ]
+                // 1. Exact match
+                let match = columns.find((col) =>
+                  aliases.some((alias) => col.toLowerCase() === alias.toLowerCase())
+                )
+                // 2. Partial match
+                if (!match) {
+                  match = columns.find((col) =>
+                    aliases.some((alias) => col.toLowerCase().includes(alias.toLowerCase()))
+                  )
+                }
+                if (match) this.option[key] = [match]
+              } else if (key === 'column_data') {
+                const aliases = [
+                  'text',
+                  'data',
+                  'body',
+                  'content',
+                  'sentence',
+                  'document',
+                  'input',
+                  'prompt',
+                  'query',
+                  'question',
+                  'answer',
+                  'response',
+                  'instruction',
+                  'summary',
+                  'review',
+                  'comment',
+                  'utterance',
+                  '文本',
+                  '内容',
+                  '句子',
+                  '评论',
+                  '输入'
+                ]
+                // 1. Exact match
+                let match = columns.find((col) =>
+                  aliases.some((alias) => col.toLowerCase() === alias.toLowerCase())
+                )
+                // 2. Partial match
+                if (!match) {
+                  match = columns.find((col) =>
+                    aliases.some((alias) => col.toLowerCase().includes(alias.toLowerCase()))
+                  )
+                }
+                if (match) this.option[key] = [match]
+              }
+            }
+          }
+        }
+        // Force Strategy (Simple & Crude)
+        // If text column is missing, pick the 1st one
+        if (
+          'column_data' in this.option &&
+          (!this.option.column_data || this.option.column_data.length === 0) &&
+          columns.length > 0
+        ) {
+          this.option.column_data = [columns[0]]
+        }
+
+        // If label column is missing, pick the last available one
+        if (
+          'column_label' in this.option &&
+          (!this.option.column_label || this.option.column_label.length === 0) &&
+          columns.length > 0
+        ) {
+          // Get currently selected text column (might have just been set)
+          const textCols = this.option.column_data || []
+          const textCol = textCols.length > 0 ? textCols[0] : null
+
+          // Find candidates (exclude text column)
+          const candidates = columns.filter((col) => col !== textCol)
+
+          if (candidates.length > 0) {
+            // Pick the last one
+            this.option.column_label = [candidates[candidates.length - 1]]
           }
         }
       } catch (e) {
