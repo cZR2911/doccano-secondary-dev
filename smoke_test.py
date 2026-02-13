@@ -223,7 +223,29 @@ def run_test():
     if not has_annotations:
         log("No auto-annotations verification", "PASS")
 
-    # 7. Cleanup
+    # 7. Verify Metrics APIs
+    metrics_endpoints = [
+        "progress",
+        "member-progress",
+        "category-distribution",
+        "span-distribution",
+        "relation-distribution"
+    ]
+    
+    metrics_fail = False
+    for endpoint in metrics_endpoints:
+        url = f"{BASE_URL}/v1/projects/{project_id}/metrics/{endpoint}"
+        resp = session.get(url)
+        if resp.status_code == 200:
+            log(f"Metrics API '{endpoint}' check", "PASS")
+        else:
+            log(f"Metrics API '{endpoint}' failed: {resp.status_code} {resp.text[:200]}", "FAIL")
+            metrics_fail = True
+    
+    if metrics_fail:
+        log("Some metrics APIs failed", "FAIL")
+
+    # 8. Cleanup
     session.delete(f"{BASE_URL}/v1/projects/{project_id}")
     log("Cleanup: Project deleted")
 

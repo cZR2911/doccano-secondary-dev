@@ -7,29 +7,49 @@ class LabelManager(Manager):
     def calc_label_distribution(self, examples, members, labels):
         """Calculate label distribution.
 
+        【标签分布统计】
+        前端位置：仪表盘 (Dashboard) -> 统计 (Statistics) -> 标签分布 (Label Distribution)
+        功能说明：统计每个用户分别使用了多少次某个标签。
+        数学意义：频数分布表 (Frequency Distribution Table)。
+
         Args:
-            examples: example queryset.
-            members: user queryset.
-            labels: label queryset.
+            examples: example queryset. (筛选后的样本集合)
+            members: user queryset. (参与统计的用户集合)
+            labels: label queryset. (需要统计的标签集合)
 
         Returns:
             label distribution per user.
+            返回格式：
+            {
+                'admin': {'positive': 10, 'negative': 5},
+                'annotator1': {'positive': 8, 'negative': 12}
+            }
 
         Examples:
             >>> self.calc_label_distribution(examples, members, labels)
             {'admin': {'positive': 10, 'negative': 5}}
         """
+        # 初始化字典：为每个用户、每个标签的计数预设为 0
         distribution = {member.username: {label.text: 0 for label in labels} for member in members}
+        
+        # 核心 SQL 聚合查询
+        # SELECT user.username, label.text, COUNT(label.text)
+        # FROM labels
+        # WHERE example_id IN (...)
+        # GROUP BY user.username, label.text
         items = (
             self.filter(example_id__in=examples)
             .values("user__username", f"{self.label_type_field}__text")
             .annotate(count=Count(f"{self.label_type_field}__text"))
         )
+        
+        # 将数据库查询结果填充回字典
         for item in items:
             username = item["user__username"]
             label = item[f"{self.label_type_field}__text"]
             count = item["count"]
-            distribution[username][label] = count
+            if username in distribution and label in distribution[username]:
+                distribution[username][label] = count
         return distribution
 
     def get_labels(self, label, project):

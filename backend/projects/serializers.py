@@ -15,7 +15,15 @@ from .models import (  # [EXPERIMENTAL-FEATURE-START]; [EXPERIMENTAL-FEATURE-END
     Speech2textProject,
     Tag,
     TextClassificationProject,
+    Attachment,
 )
+
+
+class AttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attachment
+        fields = ("id", "file", "filename", "project")
+        read_only_fields = ("id", "filename", "project")
 
 
 class MemberSerializer(serializers.ModelSerializer):

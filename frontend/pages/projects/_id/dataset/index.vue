@@ -1,88 +1,101 @@
 <template>
-  <v-card>
-    <v-card-title v-if="isProjectAdmin">
-      <action-menu
-        @upload="$router.push('dataset/import')"
-        @download="$router.push('dataset/export')"
-        @assign="dialogAssignment = true"
-        @reset="dialogReset = true"
-      />
-      <v-btn
-        class="text-capitalize ms-2"
-        :disabled="!canDelete"
-        outlined
-        @click.stop="dialogDelete = true"
-      >
-        {{ $t('generic.delete') }}
-      </v-btn>
-      <v-spacer />
-      <v-btn
-        :disabled="!item.count"
-        class="text-capitalize"
-        color="error"
-        @click="dialogDeleteAll = true"
-      >
-        {{ $t('generic.deleteAll') }}
-      </v-btn>
-      <v-dialog v-model="dialogDelete">
-        <form-delete
-          :selected="selected"
-          :item-key="itemKey"
-          @cancel="dialogDelete = false"
-          @remove="remove"
-        />
-      </v-dialog>
-      <v-dialog v-model="dialogDeleteAll">
-        <form-delete-bulk @cancel="dialogDeleteAll = false" @remove="removeAll" />
-      </v-dialog>
-      <v-dialog v-model="dialogAssignment">
-        <form-assignment @assigned="assigned" @cancel="dialogAssignment = false" />
-      </v-dialog>
-      <v-dialog v-model="dialogReset">
-        <form-reset-assignment @cancel="dialogReset = false" @reset="resetAssignment" />
-      </v-dialog>
-    </v-card-title>
-    <image-list
-      v-if="project.isImageProject"
-      v-model="selected"
-      :items="item.items"
-      :is-admin="user.isProjectAdmin"
-      :is-loading="isLoading"
-      :members="members"
-      :total="item.count"
-      @update:query="updateQuery"
-      @click:labeling="movePage"
-      @assign="assign"
-      @unassign="unassign"
-    />
-    <audio-list
-      v-else-if="project.isAudioProject"
-      v-model="selected"
-      :items="item.items"
-      :is-admin="user.isProjectAdmin"
-      :is-loading="isLoading"
-      :members="members"
-      :total="item.count"
-      @update:query="updateQuery"
-      @click:labeling="movePage"
-      @assign="assign"
-      @unassign="unassign"
-    />
-    <document-list
-      v-else
-      v-model="selected"
-      :items="item.items"
-      :is-admin="user.isProjectAdmin"
-      :is-loading="isLoading"
-      :members="members"
-      :total="item.count"
-      @update:query="updateQuery"
-      @click:labeling="movePage"
-      @edit="editItem"
-      @assign="assign"
-      @unassign="unassign"
-    />
-  </v-card>
+  <div>
+    <v-tabs v-model="tab">
+      <v-tab>{{ $t('dataset.dataset') }}</v-tab>
+      <v-tab>{{ $t('dataset.attachments') }}</v-tab>
+    </v-tabs>
+    <v-tabs-items v-model="tab">
+      <v-tab-item>
+        <v-card>
+          <v-card-title v-if="isProjectAdmin">
+            <action-menu
+              @upload="$router.push('dataset/import')"
+              @download="$router.push('dataset/export')"
+              @assign="dialogAssignment = true"
+              @reset="dialogReset = true"
+            />
+            <v-btn
+              class="text-capitalize ms-2"
+              :disabled="!canDelete"
+              outlined
+              @click.stop="dialogDelete = true"
+            >
+              {{ $t('generic.delete') }}
+            </v-btn>
+            <v-spacer />
+            <v-btn
+              :disabled="!item.count"
+              class="text-capitalize"
+              color="error"
+              @click="dialogDeleteAll = true"
+            >
+              {{ $t('generic.deleteAll') }}
+            </v-btn>
+            <v-dialog v-model="dialogDelete">
+              <form-delete
+                :selected="selected"
+                :item-key="itemKey"
+                @cancel="dialogDelete = false"
+                @remove="remove"
+              />
+            </v-dialog>
+            <v-dialog v-model="dialogDeleteAll">
+              <form-delete-bulk @cancel="dialogDeleteAll = false" @remove="removeAll" />
+            </v-dialog>
+            <v-dialog v-model="dialogAssignment">
+              <form-assignment @assigned="assigned" @cancel="dialogAssignment = false" />
+            </v-dialog>
+            <v-dialog v-model="dialogReset">
+              <form-reset-assignment @cancel="dialogReset = false" @reset="resetAssignment" />
+            </v-dialog>
+          </v-card-title>
+          <image-list
+            v-if="project.isImageProject"
+            v-model="selected"
+            :items="item.items"
+            :is-admin="user.isProjectAdmin"
+            :is-loading="isLoading"
+            :members="members"
+            :total="item.count"
+            @update:query="updateQuery"
+            @click:labeling="movePage"
+            @assign="assign"
+            @unassign="unassign"
+          />
+          <audio-list
+            v-else-if="project.isAudioProject"
+            v-model="selected"
+            :items="item.items"
+            :is-admin="user.isProjectAdmin"
+            :is-loading="isLoading"
+            :members="members"
+            :total="item.count"
+            @update:query="updateQuery"
+            @click:labeling="movePage"
+            @assign="assign"
+            @unassign="unassign"
+          />
+          <document-list
+            v-else
+            v-model="selected"
+            :items="item.items"
+            :is-admin="user.isProjectAdmin"
+            :is-loading="isLoading"
+            :members="members"
+            :total="item.count"
+            @update:query="updateQuery"
+            @click:labeling="movePage"
+            @edit="editItem"
+            @assign="assign"
+            @unassign="unassign"
+          />
+        </v-card>
+      </v-tab-item>
+      <v-tab-item>
+        <attachment-list />
+      </v-tab-item>
+    </v-tabs-items>
+  </div>
 </template>
 
 <script lang="ts">
@@ -98,6 +111,7 @@ import FormResetAssignment from '~/components/example/FormResetAssignment.vue'
 import ActionMenu from '~/components/example/ActionMenu.vue'
 import AudioList from '~/components/example/AudioList.vue'
 import ImageList from '~/components/example/ImageList.vue'
+import AttachmentList from '~/components/attachment/AttachmentList.vue'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 import { ExampleDTO, ExampleListDTO } from '~/services/application/example/exampleData'
 import { MemberItem } from '~/domain/models/member/member'
@@ -108,6 +122,7 @@ export default Vue.extend({
     AudioList,
     DocumentList,
     ImageList,
+    AttachmentList,
     FormAssignment,
     FormDelete,
     FormDeleteBulk,
@@ -124,6 +139,7 @@ export default Vue.extend({
 
   data() {
     return {
+      tab: null,
       dialogDelete: false,
       dialogDeleteAll: false,
       dialogAssignment: false,

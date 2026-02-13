@@ -27,6 +27,19 @@ class ProjectType(models.TextChoices):
     # [EXPERIMENTAL-FEATURE-END]
 
 
+class Attachment(models.Model):
+    project = models.ForeignKey("Project", on_delete=models.CASCADE, related_name="attachments")
+    file = models.FileField(upload_to="attachments/")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+
+    @property
+    def filename(self):
+        return self.file.name.split("/")[-1]
+
+
 class Project(PolymorphicModel):
     name = models.CharField(max_length=100)
     description = models.TextField(default="")

@@ -1,8 +1,10 @@
 export default {
   dataset: 'Dataset',
+  attachments: 'Attachments',
   actions: 'Actions',
   importDataset: 'Import Dataset',
   exportDataset: 'Export Dataset',
+  filename: 'Filename',
   text: 'Text',
   metadata: 'Metadata',
   action: 'Action',

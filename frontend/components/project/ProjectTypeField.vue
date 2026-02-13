@@ -4,12 +4,7 @@
       <v-col v-for="(item, i) in visibleProjectTypes" :key="i">
         <v-item v-slot="{ active, toggle }">
           <v-card class="mb-6 me-6" max-width="350" outlined>
-            <v-img
-              :src="require(`~/assets/images/tasks/${getImage(item)}`)"
-              height="200"
-              contain
-              @click="toggle"
-            />
+            <task-preview :type="item" @click="toggle" />
             <v-card-title>
               <v-icon v-if="active">
                 {{ mdiCheckBold }}
@@ -29,6 +24,7 @@
 <script lang="ts">
 import { mdiCheckBold } from '@mdi/js'
 import Vue from 'vue'
+import TaskPreview from './TaskPreview.vue'
 import {
   allProjectTypes,
   DocumentClassification,
@@ -36,6 +32,9 @@ import {
 } from '~/domain/models/project/project'
 
 export default Vue.extend({
+  components: {
+    TaskPreview
+  },
   props: {
     value: {
       type: String,
@@ -66,22 +65,6 @@ export default Vue.extend({
   },
 
   methods: {
-    getImage(type: ProjectType): string {
-      const map: Record<string, string> = {
-        DocumentClassification: 'text_classification.png',
-        SequenceLabeling: 'sequence_labeling.png',
-        Seq2seq: 'seq2seq.png',
-        IntentDetectionAndSlotFilling: 'intent_detection.png',
-        ImageClassification: 'image_classification.png',
-        ImageCaptioning: 'image_captioning.jpg',
-        BoundingBox: 'object_detection.jpg',
-        Segmentation: 'segmentation.jpg',
-        Speech2text: 'speech_to_text.png',
-        KnowledgeCorrection: 'sequence_labeling.png'
-      }
-      return map[type]
-    },
-
     translateTypeName(type: ProjectType, types: any): string {
       const index = allProjectTypes.indexOf(type)
       return types[index]

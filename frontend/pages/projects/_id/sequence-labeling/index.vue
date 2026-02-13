@@ -16,14 +16,15 @@
     <template #content>
       <v-card>
         <!-- [EXPERIMENTAL-FEATURE-START] Edit Button -->
-        <v-card-title v-if="canEdit" class="pb-0">
+        <v-card-title class="pb-0">
           <v-spacer />
-          <v-btn small color="primary" text @click="openEditDialog">
+          <v-btn v-if="canEdit" small color="primary" text @click="openEditDialog" class="mr-2">
             <v-icon left small>
               {{ mdiPencil }}
             </v-icon>
             编辑原文
           </v-btn>
+          <attachment-dialog />
         </v-card-title>
         <!-- [EXPERIMENTAL-FEATURE-END] -->
         <div class="annotation-text pa-4">
@@ -56,6 +57,8 @@
             {{ mdiHistory }}
           </v-icon>
           原文 (Original Text)
+          <v-spacer />
+          <attachment-dialog />
         </v-card-title>
         <v-divider />
         <div
@@ -200,6 +203,7 @@ import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
+import AttachmentDialog from '@/components/attachment/AttachmentDialog.vue'
 
 export default {
   components: {
@@ -208,7 +212,8 @@ export default {
     LayoutText,
     ListMetadata,
     ToolbarLaptop,
-    ToolbarMobile
+    ToolbarMobile,
+    AttachmentDialog
   },
 
   layout: 'workspace',

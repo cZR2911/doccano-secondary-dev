@@ -1,120 +1,130 @@
 <template>
-  <v-card>
-    <v-card-title>
-      {{ $t('dataset.importDataTitle') }}
-    </v-card-title>
-    <v-card-text>
-      <v-overlay :value="isImporting">
-        <v-progress-circular indeterminate size="64" />
-      </v-overlay>
-      <v-select
-        v-model="selected"
-        :items="catalog"
-        item-text="displayName"
-        :menu-props="{ maxHeight: 600 }"
-        :label="$t('dataset.fileFormat')"
-        outlined
-      />
-      <v-form v-model="valid">
-        <template v-for="(item, key) in textFields">
-          <v-combobox
-            v-if="['column_data', 'column_label'].includes(key)"
-            :key="key"
-            v-model="option[key]"
-            :items="columns"
-            :label="$te('dataset.' + key) ? $t('dataset.' + key) : item.title"
-            :hint="
-              $te('dataset.' + key + '_hint') ? $t('dataset.' + key + '_hint') : item.description
-            "
-            persistent-hint
-            :rules="requiredRules"
-            multiple
-            chips
-            small-chips
-            deletable-chips
-            outlined
-            :append-outer-icon="mdiSelectAll"
-            @click:append-outer="selectAll(key)"
-          />
-          <v-text-field
-            v-else
-            :key="key"
-            v-model="option[key]"
-            :label="$te('dataset.' + key) ? $t('dataset.' + key) : item.title"
-            :hint="
-              $te('dataset.' + key + '_hint') ? $t('dataset.' + key + '_hint') : item.description
-            "
-            persistent-hint
-            :rules="requiredRules"
+  <v-row>
+    <v-col cols="12" md="8">
+      <v-card class="mb-5">
+        <v-card-title>
+          {{ $t('dataset.importDataTitle') }}
+        </v-card-title>
+        <v-card-text>
+          <v-overlay :value="isImporting">
+            <v-progress-circular indeterminate size="64" />
+          </v-overlay>
+          <v-select
+            v-model="selected"
+            :items="catalog"
+            item-text="displayName"
+            :menu-props="{ maxHeight: 600 }"
+            :label="$t('dataset.fileFormat')"
             outlined
           />
-        </template>
-        <v-select
-          v-for="(val, key) in selectFields"
-          :key="key"
-          v-model="option[key]"
-          :items="val.enum"
-          :label="$te('dataset.' + key) ? $t('dataset.' + key) : val.title"
-          outlined
-        >
-          <template #selection="{ item }">
-            {{ toVisualize(item) }}
-          </template>
-          <template #item="{ item }">
-            {{ toVisualize(item) }}
-          </template>
-        </v-select>
-      </v-form>
-      <v-sheet
-        v-if="selected"
-        :dark="!$vuetify.theme.dark"
-        :light="$vuetify.theme.dark"
-        class="mb-5 pa-5"
-      >
-        <pre>{{ example }}</pre>
-      </v-sheet>
-      <div v-if="selected === 'JSONL(Relation)'">
-        <p class="body-1">{{ $t('dataset.importDataMessage') }}</p>
-        <v-sheet :dark="!$vuetify.theme.dark" :light="$vuetify.theme.dark" class="mb-5 pa-5">
-          <pre>{{ JSON.stringify(JSON.parse(example.replaceAll("'", '"')), null, 4) }}</pre>
-        </v-sheet>
-      </div>
-      <file-pond
-        v-if="selected && acceptedFileTypes !== '*'"
-        ref="pond"
-        chunk-uploads="true"
-        :label-idle="$t('dataset.dropFiles')"
-        :allow-multiple="true"
-        :accepted-file-types="acceptedFileTypes"
-        :server="server"
-        :files="myFiles"
-        @processfile="handleFilePondProcessFile"
-        @removefile="handleFilePondRemoveFile"
-      />
-      <file-pond
-        v-if="selected && acceptedFileTypes === '*'"
-        ref="pond"
-        chunk-uploads="true"
-        :label-idle="$t('dataset.dropFiles')"
-        :allow-multiple="true"
-        :server="server"
-        :files="myFiles"
-        @processfile="handleFilePondProcessFile"
-        @removefile="handleFilePondRemoveFile"
-      />
-      <v-data-table
-        v-if="errors.length > 0"
-        :headers="headers"
-        :items="errors"
-        class="elevation-1"
-      ></v-data-table>
-    </v-card-text>
-    <v-card-actions>
-      <v-btn class="text-capitalize ms-2 primary" :disabled="isDisabled" @click="importDataset">
-        {{ $t('generic.import') }}
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+          <v-form v-model="valid">
+            <template v-for="(item, key) in textFields">
+              <v-combobox
+                v-if="['column_data', 'column_label'].includes(key)"
+                :key="key"
+                v-model="option[key]"
+                :items="columns"
+                :label="$te('dataset.' + key) ? $t('dataset.' + key) : item.title"
+                :hint="
+                  $te('dataset.' + key + '_hint')
+                    ? $t('dataset.' + key + '_hint')
+                    : item.description
+                "
+                persistent-hint
+                :rules="requiredRules"
+                multiple
+                chips
+                small-chips
+                deletable-chips
+                outlined
+                :append-outer-icon="mdiSelectAll"
+                @click:append-outer="selectAll(key)"
+              />
+              <v-text-field
+                v-else
+                :key="key"
+                v-model="option[key]"
+                :label="$te('dataset.' + key) ? $t('dataset.' + key) : item.title"
+                :hint="
+                  $te('dataset.' + key + '_hint')
+                    ? $t('dataset.' + key + '_hint')
+                    : item.description
+                "
+                persistent-hint
+                :rules="requiredRules"
+                outlined
+              />
+            </template>
+            <v-select
+              v-for="(val, key) in selectFields"
+              :key="key"
+              v-model="option[key]"
+              :items="val.enum"
+              :label="$te('dataset.' + key) ? $t('dataset.' + key) : val.title"
+              outlined
+            >
+              <template #selection="{ item }">
+                {{ toVisualize(item) }}
+              </template>
+              <template #item="{ item }">
+                {{ toVisualize(item) }}
+              </template>
+            </v-select>
+          </v-form>
+          <v-sheet
+            v-if="selected"
+            :dark="!$vuetify.theme.dark"
+            :light="$vuetify.theme.dark"
+            class="mb-5 pa-5"
+          >
+            <pre>{{ example }}</pre>
+          </v-sheet>
+          <div v-if="selected === 'JSONL(Relation)'">
+            <p class="body-1">{{ $t('dataset.importDataMessage') }}</p>
+            <v-sheet :dark="!$vuetify.theme.dark" :light="$vuetify.theme.dark" class="mb-5 pa-5">
+              <pre>{{ JSON.stringify(JSON.parse(example.replaceAll("'", '"')), null, 4) }}</pre>
+            </v-sheet>
+          </div>
+          <file-pond
+            v-if="selected && acceptedFileTypes !== '*'"
+            ref="pond"
+            chunk-uploads="true"
+            :label-idle="$t('dataset.dropFiles')"
+            :allow-multiple="true"
+            :accepted-file-types="acceptedFileTypes"
+            :server="server"
+            :files="myFiles"
+            @processfile="handleFilePondProcessFile"
+            @removefile="handleFilePondRemoveFile"
+          />
+          <file-pond
+            v-if="selected && acceptedFileTypes === '*'"
+            ref="pond"
+            chunk-uploads="true"
+            :label-idle="$t('dataset.dropFiles')"
+            :allow-multiple="true"
+            :server="server"
+            :files="myFiles"
+            @processfile="handleFilePondProcessFile"
+            @removefile="handleFilePondRemoveFile"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            :disabled="!valid || isImporting"
+            color="primary"
+            class="text-capitalize"
+            @click="importDataset"
+          >
+            {{ $t('dataset.import') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-col>
+    <v-col cols="12" md="4">
+      <attachment-list custom-title="上传附件" />
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -123,11 +133,13 @@ import 'filepond/dist/filepond.min.css'
 import Cookies from 'js-cookie'
 import vueFilePond from 'vue-filepond'
 import { mdiSelectAll } from '@mdi/js'
+import AttachmentList from '@/components/attachment/AttachmentList.vue'
 const FilePond = vueFilePond(FilePondPluginFileValidateType)
 
 export default {
   components: {
-    FilePond
+    FilePond,
+    AttachmentList
   },
 
   layout: 'project',

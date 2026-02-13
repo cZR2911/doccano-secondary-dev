@@ -1,5 +1,6 @@
 export default {
   dataset: '数据集',
+  attachments: '附件',
   actions: '操作',
   importDataset: '导入数据集',
   exportDataset: '导出数据集',
@@ -38,5 +39,6 @@ export default {
   encoding: '编码',
   status: '状态',
   inProgress: '待处理',
-  finished: '已处理'
+  finished: '已处理',
+  import: '导入'
 }

@@ -1,5 +1,25 @@
 # Change Log
 
+## [2.13] - 2026-02-13
+
+### Frontend Visual Optimization (Localized Previews & Login Page)
+- **Login Page Refactor**:
+    - **Tech Purple/Blue Gradient**: Updated background to a professional gradient (`#363795` to `#005C97`).
+    - **Brand Identity**: Added "Doccano 默联数据标注平台" title and logo for better branding.
+    - **Card Layout**: Enhanced login form with a centered, elevated card design.
+- **Localized Project Previews**:
+    - **Dynamic Components**: Replaced static English images with `TaskPreview.vue` showing interactive Chinese examples.
+    - **Scenario Demos**:
+        - **Text Classification**: Chinese sentiment analysis (Positive/Negative).
+        - **Sequence Labeling**: Entity recognition (Person/Location/Company).
+        - **Seq2seq**: Translation (English to Chinese).
+        - **Intent Detection**: Ticket booking intent with slot filling.
+        - **Knowledge Correction**: Typo correction example.
+    - **UI Details**: Added simulated window controls (Red/Yellow/Green dots) for a polished look.
+
+### Code Quality
+- **ESLint Fixes**: Resolved `max-len` and self-closing tag errors in `TaskPreview.vue` to comply with linting rules.
+
 ## [2.12] - 2026-02-12
 
 ### Import Logic Correction (Remote Sync & Local Fixes)
