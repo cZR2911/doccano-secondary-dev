@@ -7,7 +7,7 @@
         </v-icon>
       </v-btn>
     </template>
-    <span>Clear labels</span>
+    <span>{{ $t('annotation.clearLabelsTooltip') }}</span>
   </v-tooltip>
 </template>
 

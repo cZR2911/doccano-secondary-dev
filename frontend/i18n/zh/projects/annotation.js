@@ -16,5 +16,12 @@ export default {
   labelTypes: '标签类型',
   relationMode: '关系模式',
   spanMode: '跨度模式',
-  correctionPrompt: '请输入针对 [{0}] "{1}" 的批注/纠错建议 (留空则跳过):'
+  correctionPrompt: '请输入针对 [{0}] "{1}" 的批注/纠错建议 (留空则跳过):',
+  orderOption1: '按得分升序',
+  orderOption2: '按得分降序',
+  searchTooltip: '在文件中查找标注文本',
+  searchPopupTitle: '查找标注文本',
+  autoLabelingTooltip: '自动标注',
+  clearLabelsTooltip: '清除标签',
+  keyboardShortcutTooltip: '键盘快捷键'
 }

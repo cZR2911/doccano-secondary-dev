@@ -1,24 +1,24 @@
 <template>
   <v-tooltip bottom>
     <template #activator="{ on }">
-      <v-btn icon v-on="on" @click="$emit('click:auto')">
+      <v-btn icon v-on="on" @click="$emit('click:search')">
         <v-icon>
-          {{ mdiAutoFix }}
+          {{ mdiMagnify }}
         </v-icon>
       </v-btn>
     </template>
-    <span>{{ $t('annotation.autoLabelingTooltip') }}</span>
+    <span>{{ $t('annotation.searchTooltip') }}</span>
   </v-tooltip>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { mdiAutoFix } from '@mdi/js'
+import { mdiMagnify } from '@mdi/js'
 
 export default Vue.extend({
   data() {
     return {
-      mdiAutoFix
+      mdiMagnify
     }
   }
 })

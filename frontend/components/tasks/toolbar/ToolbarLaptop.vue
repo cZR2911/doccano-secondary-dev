@@ -28,6 +28,11 @@
           />
         </v-dialog>
 
+        <button-search @click:search="dialogSearch = true" />
+        <v-dialog v-model="dialogSearch">
+          <form-search @click:close="dialogSearch = false" />
+        </v-dialog>
+
         <button-clear @click:clear="dialogClear = true" />
         <v-dialog v-model="dialogClear">
           <form-clear-label
@@ -70,11 +75,13 @@ import ButtonOrder from './buttons/ButtonOrder.vue'
 import ButtonPagination from './buttons/ButtonPagination.vue'
 import ButtonReview from './buttons/ButtonReview.vue'
 import ButtonKeyboardShortcut from './buttons/ButtonKeyboardShortcut.vue'
+import ButtonSearch from './buttons/ButtonSearch.vue'
 import FormAutoLabeling from './forms/FormAutoLabeling.vue'
 import FormClearLabel from './forms/FormClearLabel.vue'
 import FormComment from './forms/FormComment.vue'
 import FormGuideline from './forms/FormGuideline.vue'
 import FormKeyboardShortcut from './forms/FormKeyboardShortcut.vue'
+import FormSearch from './forms/FormSearch.vue'
 
 export default Vue.extend({
   components: {
@@ -87,11 +94,13 @@ export default Vue.extend({
     ButtonKeyboardShortcut,
     ButtonPagination,
     ButtonReview,
+    ButtonSearch,
     FormAutoLabeling,
     FormClearLabel,
     FormComment,
     FormGuideline,
-    FormKeyboardShortcut
+    FormKeyboardShortcut,
+    FormSearch
   },
 
   props: {
@@ -125,6 +134,7 @@ export default Vue.extend({
       dialogClear: false,
       dialogComment: false,
       dialogGuideline: false,
+      dialogSearch: false,
       dialogShortcut: false,
       errorMessage: ''
     }

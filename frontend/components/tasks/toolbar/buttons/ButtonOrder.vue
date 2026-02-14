@@ -22,7 +22,7 @@
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title>
-              {{ item.title }}
+              {{ getTranslatedTitle(item) }}
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -46,8 +46,8 @@ export default {
   data() {
     return {
       items: [
-        { title: 'Lowest score first', param: 'score' },
-        { title: 'Highest score first', param: '-score' }
+        { key: 'orderOption1', param: 'score' },
+        { key: 'orderOption2', param: '-score' }
       ],
       mdiSort,
       mdiCheck
@@ -68,6 +68,12 @@ export default {
           this.$emit('click:order', '')
         }
       }
+    }
+  },
+
+  methods: {
+    getTranslatedTitle(item) {
+      return this.$t(`annotation.${item.key}`)
     }
   }
 }

@@ -7,7 +7,7 @@
         </v-icon>
       </v-btn>
     </template>
-    <span>Keyboard Shortcut</span>
+    <span>{{ $t('annotation.keyboardShortcutTooltip') }}</span>
   </v-tooltip>
 </template>
 
